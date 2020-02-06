@@ -1,3 +1,19 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# 0.1.0-alpha.0 (2020-02-06)
+
+
+### Features
+
+* happy birthday joke ([de30ad3](https://github.com/anilanar/joke/commit/de30ad331af8294a973a1c3c90023e33201fc290))
+
+
+
+
+
 `joke` is a typesafe, boilerplate version of `jest.mock`.
 
 To be able to use `jest.mock` in Typescript, 3 lines of code is needed in the best scenario. The effect multiplies when you need to mock multiple modules. If you mock 3 modules, you will need 9 lines of code. `joke` reduces 9 lines to 3 lines:
@@ -59,4 +75,3 @@ it("mocks multiply", () => {
   expect(add).toBeCalledWith(4, 2);
   expect(add).toBeCalledTimes(2);
 });
-

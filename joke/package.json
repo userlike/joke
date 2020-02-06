@@ -1,6 +1,6 @@
 {
   "name": "@userlike/joke",
-  "version": "0.0.1",
+  "version": "0.1.0-alpha.0",
   "description": "Typesafe mock utility with minimal boilerplate for jest",
   "keywords": [
     "typescript",
@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@babel/runtime-corejs3": "^7.8.4",
-    "core-js-pure": "^3.6.4",
-    "@types/jest": ">=15.0.0 <=25"
+    "@types/jest": ">=15.0.0 <=25",
+    "core-js-pure": "^3.6.4"
   }
 }

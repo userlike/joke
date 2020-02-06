@@ -1,6 +1,6 @@
 {
   "name": "@userlike/joke-example",
-  "version": "1.0.0",
+  "version": "0.1.0-alpha.0",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -8,10 +8,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "@userlike/joke": "*"
+    "@userlike/joke": "^0.1.0-alpha.0"
   },
   "devDependencies": {
     "@types/jest": "25.1.2",
-    "@userlike/babel-plugin-joke": "*"
+    "@userlike/babel-plugin-joke": "^0.1.0-alpha.0"
   }
 }
