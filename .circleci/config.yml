@@ -11,7 +11,7 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "yarn.lock" }}
             - v1-dependencies-
-      - run: yarn
+      - run: yarn --ignore-engines
       - save_cache:
           paths:
             - node_modules
