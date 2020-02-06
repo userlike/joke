@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.shared.json",
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "baseUrl": "./",
+    "rootDir": "src"
+  },
+  "files": ["src/index.ts"]
+}

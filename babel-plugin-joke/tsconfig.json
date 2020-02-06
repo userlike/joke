@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.shared.json",
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "baseUrl": "./",
+    "rootDir": "src",
+    "outDir": "dist",
+    "paths": {
+      "@babel/types": ["types/@babel/types"],
+      "@babel/helper-module-imports": ["types/@babel/helper-module-imports"]
+    }
+  },
+  "files": ["src/index.ts"]
+}

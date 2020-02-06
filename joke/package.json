@@ -1,0 +1,26 @@
+{
+  "name": "@userlike/joke",
+  "version": "0.0.1",
+  "description": "Typesafe mock utility with minimal boilerplate for jest",
+  "keywords": [
+    "typescript",
+    "jest",
+    "mock"
+  ],
+  "author": {
+    "name": "Anil Anar",
+    "email": "mail@anilanar.me"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc && babel src/index.ts --out-dir dist -x '.ts'",
+    "test": "echo 'No tests for @userlike/joke yet.'"
+  },
+  "dependencies": {
+    "@babel/runtime-corejs3": "^7.8.4",
+    "core-js-pure": "^3.6.4",
+    "@types/jest": ">=15.0.0 <=25"
+  }
+}

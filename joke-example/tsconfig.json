@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.shared.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@babel/types": ["types/@babel/types"],
+      "@babel/helper-module-imports": ["types/@babel/helper-module-imports"]
+    }
+  },
+  "include": ["src/**/*"],
+  "references": [{ "path": "../joke" }, { "path": "../babel-plugin-joke" }]
+}
