@@ -1,44 +1,20 @@
 version: 2.1
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8.17
+    working_directory: ~/repo
 
-commands:
-  yarn:
-    steps:
-      - run:
-          name: "Install dependencies"
-          command: yarn
-  restore_module_cache:
-    parameters:
-      module_path:
-        type: string
-    steps:
-      - restore_cache:
-          keys:
-            - v{{ .Environment.CIRCLECI_CACHE_VERSION }}-dependencies-<< parameters.module_path >>-{{ checksum "<< parameters.module_path >>/yarn.lock" }}
-  save_module_cache:
-    parameters:
-      module_path:
-        type: string
-    steps:
-      - save_cache:
-          key: v{{ .Environment.CIRCLECI_CACHE_VERSION }}-dependencies-<< parameters.module_path >>-{{ checksum "<< parameters.module_path >>/yarn.lock" }}
-          paths:
-            - << parameters.module_path >>/node_modules
-  setup_and_test:
     steps:
       - checkout
-      - restore_module_cache: { module_path: ./ }
-      - yarn
-      - save_module_cache: { module_path: ./ }
-      - run:
-          name: "Typescript"
-          command: yarn build
-      - run:
-          name: "Test"
-          command: yarn test
-jobs:
-  test:
-    docker:
-      - image: circleci/node:8.17.0
-    working_directory: ~/app
-    steps:
-      - setup_and_test
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "yarn.lock" }}
+            - v1-dependencies-
+      - run: yarn
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
+      - run: yarn build
+      - run: yarn test
