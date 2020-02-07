@@ -1,20 +1,6 @@
 import * as B from "@babel/core";
 import plugin from "./index";
 
-var example = `
-import { mock } from '@userlike/joke';
-
-const { foo, foo2 } = mock(import('foo'));
-const { bar, bar2 } = mock(import('bar'));
-
-foo.mockReturnValue(5);
-foo2.mockReturnValue(5);
-bar.mockReturnValue(5);
-bar2.mockReturnValue(5);
-
-[foo, foo2, bar, bar2].forEach(console.log);
-`;
-
 it("common case", async () => {
   const result = await assert(`
   import { mock } from '@userlike/joke';
@@ -51,14 +37,15 @@ it("common case", async () => {
   `);
 });
 
-it("ignores mock import as a namespace", async () => {
+it("handles mock import as a namespace", async () => {
   const result = await assert(`
   import * as M from '@userlike/joke';
-  M.mock(import('foobar'));
+  const { foo } = M.mock(import('foobar'));
   `);
   expect(result).toMatchInlineSnapshot(`
-"import * as M from '@userlike/joke';
-M.mock(import('foobar'));"
+"import { foo as _foo } from \\"foobar\\";
+import * as M from '@userlike/joke';
+jest.mock(\\"foobar\\");"
 `);
 });
 

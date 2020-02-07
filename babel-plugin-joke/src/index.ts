@@ -19,18 +19,41 @@ export default function UserlikeJoke({
     visitor: {
       Program(path) {
         const statements = path.node.body;
-        const mockRefs = statements
+        const namedMockRefs = statements
           .filter(pred(t.isImportDeclaration))
           .filter(s => s.source.value === MODULE_NAME)
           .flatMap(s => s.specifiers)
           .filter(pred(t.isImportSpecifier))
           .filter(s => s.imported.name === IMPORT_FN)
-          .map(s => s.local.name);
-
-        const mockRefPaths = mockRefs
+          .map(s => s.local.name)
           .map(ref => path.scope.getBinding(ref))
           .filter((ref): ref is Binding => ref !== undefined)
           .flatMap(ref => ref.referencePaths);
+
+        const namespaceMockRefs = statements
+          .filter(pred(t.isImportDeclaration))
+          .filter(s => s.source.value === MODULE_NAME)
+          .flatMap(s => s.specifiers)
+          .filter(pred(t.isImportNamespaceSpecifier))
+          .map(s => s.local.name)
+          .map(ref => path.scope.getBinding(ref))
+          .filter((ref): ref is Binding => ref !== undefined)
+          .flatMap(ref => ref.referencePaths)
+          .filter(path => {
+            const M = path.node;
+            const memberExpr = path.parent;
+            if (!t.isMemberExpression(memberExpr)) return false;
+            if (memberExpr.object !== M) return false;
+            if (
+              !t.isIdentifier(memberExpr.property) ||
+              memberExpr.property.name !== "mock"
+            )
+              return false;
+            return true;
+          })
+          .map(path => path.parentPath);
+
+        const mockRefPaths = namedMockRefs.concat(namespaceMockRefs);
 
         mockRefPaths.forEach(process(t, path));
       }
