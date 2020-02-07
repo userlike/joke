@@ -64,6 +64,21 @@ _foobar.foo.mockReturnValue(5);"
 `);
 });
 
+it("handles member expressions", async () => {
+  const result = await assert(`
+  import { mock } from '@userlike/joke';
+  const bar = mock(import('foobar')).foo.bar;
+  bar.mockReturnValue(5);
+  `);
+  expect(result).toMatchInlineSnapshot(`
+"import { foo as _foo } from \\"foobar\\";
+import { mock } from '@userlike/joke';
+jest.mock(\\"foobar\\");
+const bar = _foo.bar;
+bar.mockReturnValue(5);"
+`);
+});
+
 it("ignores mock calls inside closures", async () => {
   const result = await assert(`
     import { mock } from '@userlike/joke';
