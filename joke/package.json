@@ -22,5 +22,8 @@
     "@babel/runtime-corejs3": "^7.8.4",
     "@types/jest": ">=15.0.0 <=25",
     "core-js-pure": "^3.6.4"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
