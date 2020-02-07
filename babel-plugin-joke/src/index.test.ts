@@ -43,10 +43,10 @@ it("handles mock import as a namespace", async () => {
   const { foo } = M.mock(import('foobar'));
   `);
   expect(result).toMatchInlineSnapshot(`
-"import { foo as _foo } from \\"foobar\\";
-import * as M from '@userlike/joke';
-jest.mock(\\"foobar\\");"
-`);
+    "import { foo as _foo } from \\"foobar\\";
+    import * as M from '@userlike/joke';
+    jest.mock(\\"foobar\\");"
+  `);
 });
 
 it("handles assigning return value to a namespace variable", async () => {
@@ -76,6 +76,46 @@ it("ignores mock calls inside closures", async () => {
 import { mock } from '@userlike/joke';
 jest.mock(\\"foo\\");
 beforeEach(() => {});"
+`);
+});
+
+it("throws a sensible error", async () => {
+  const promise = assert(`
+    import { mock } from '@userlike/joke';
+    mock('foo');
+    `);
+
+  expect(promise).rejects.toMatchInlineSnapshot(`
+[Error: /Users/anilanar/development/joke/babel-plugin-joke/example.ts: 
+\`mock\` must be used like:
+
+const { foo } = mock(import('moduleName'))
+
+Instead saw:
+
+mock('foo')
+
+]
+`);
+});
+
+it("throws a sensible error when rest params are used", async () => {
+  const promise = assert(`
+    import { mock } from '@userlike/joke';
+    const { foo, ...bar } = mock(import('foobar'));
+    `);
+
+  expect(promise).rejects.toMatchInlineSnapshot(`
+[Error: /Users/anilanar/development/joke/babel-plugin-joke/example.ts: 
+\`mock\` must be used like:
+
+const { foo } = mock(import('moduleName'))
+
+Instead saw:
+
+{ foo, ...bar } = mock(import('foobar'))
+
+]
 `);
 });
 

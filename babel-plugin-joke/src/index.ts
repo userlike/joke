@@ -69,31 +69,31 @@ function process(
     const callPath = mockPath.parentPath;
     const call = mockPath.parent;
 
-    invariant(t.isCallExpression(call));
+    invariant(t.isCallExpression(call), callPath);
 
     const asyncImport = call.arguments[0];
-    invariant(t.isCallExpression(asyncImport));
-    invariant(t.isImport(asyncImport.callee));
-    invariant(asyncImport.arguments.length === 1);
+    invariant(t.isCallExpression(asyncImport), callPath);
+    invariant(t.isImport(asyncImport.callee), callPath);
+    invariant(asyncImport.arguments.length === 1, callPath);
 
     const moduleNameLiteral = asyncImport.arguments[0];
-    invariant(t.isStringLiteral(moduleNameLiteral));
+    invariant(t.isStringLiteral(moduleNameLiteral), callPath);
     const moduleName = moduleNameLiteral.value;
 
     const declaratorPath = callPath.parentPath;
     const declarator = declaratorPath.node;
 
-    invariant(t.isVariableDeclarator(declarator));
+    invariant(t.isVariableDeclarator(declarator), declaratorPath);
 
     const lval = declarator.id;
 
-    invariant(t.isObjectPattern(lval) || t.isIdentifier(lval));
+    invariant(t.isObjectPattern(lval) || t.isIdentifier(lval), declaratorPath);
 
     if (t.isObjectPattern(lval)) {
       const namedImports = lval.properties.map(p => {
-        invariant(!t.isRestElement(p));
-        invariant(t.isIdentifier(p.key));
-        invariant(t.isIdentifier(p.value));
+        invariant(!t.isRestElement(p), declaratorPath);
+        invariant(t.isIdentifier(p.key), declaratorPath);
+        invariant(t.isIdentifier(p.value), declaratorPath);
         return [p.key.name, p.value.name];
       });
       namedImports.forEach(([k, v]) => {
@@ -108,7 +108,7 @@ function process(
 
     const declarationPath = declaratorPath.parentPath;
     const declaration = declarationPath.node;
-    invariant(t.isVariableDeclaration(declaration));
+    invariant(t.isVariableDeclaration(declaration), declarationPath);
 
     const idx = declaration.declarations.findIndex(d => d === declarator);
     declaration.declarations.splice(idx, 1);
@@ -137,22 +137,23 @@ function process(
     );
     insertionIO();
   };
-
-  function throwErr(): never {
-    throw new Error(
-      `\`mock\` must be a call expression.
-                e.g. \`mock(import("moduleName"))\`.
-                Instead saw \`${path.getSource()}\`.
-                `
-    );
-  }
-
-  function invariant(condition: boolean): asserts condition {
-    if (condition) return;
-    throwErr();
-  }
 }
 
 function pred<T, R extends T>(predicate: (x: T) => x is R): (x: T) => x is R {
   return predicate;
+}
+
+function invariant(condition: boolean, path: NodePath): asserts condition {
+  if (condition) return;
+  throwErr(path);
+}
+function throwErr(path: NodePath): never {
+  throw new Error(
+    "\n" +
+      "`mock` must be used like:\n\n" +
+      "const { foo } = mock(import('moduleName'))\n\n" +
+      "Instead saw:\n\n" +
+      path.getSource() +
+      "\n\n"
+  );
 }
