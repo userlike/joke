@@ -15,6 +15,7 @@
   "types": "dist/index.d.ts",
   "license": "MIT",
   "scripts": {
+    "prepublishOnly": "yarn build",
     "build": "tsc && babel src/index.ts --out-dir dist -x '.ts'",
     "test": "echo 'No tests for @userlike/joke yet.'"
   },
