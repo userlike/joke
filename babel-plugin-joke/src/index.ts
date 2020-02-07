@@ -1,7 +1,7 @@
 import { pipe } from "fp-ts/lib/pipeable";
 import * as A from "fp-ts/lib/Array";
 import * as O from "fp-ts/lib/Option";
-import { addNamed } from "@babel/helper-module-imports";
+import { addNamed, addNamespace } from "@babel/helper-module-imports";
 import { PluginObj } from "@babel/core";
 import { Binding, NodePath } from "@babel/traverse";
 import { Program } from "@babel/types";
@@ -85,15 +85,26 @@ function process(
 
     invariant(t.isVariableDeclarator(declarator));
 
-    const objectPattern = declarator.id;
-    invariant(t.isObjectPattern(objectPattern));
+    const lval = declarator.id;
 
-    const namedImports = objectPattern.properties.map(p => {
-      invariant(!t.isRestElement(p));
-      invariant(t.isIdentifier(p.key));
-      invariant(t.isIdentifier(p.value));
-      return [p.key.name, p.value.name];
-    });
+    invariant(t.isObjectPattern(lval) || t.isIdentifier(lval));
+
+    if (t.isObjectPattern(lval)) {
+      const namedImports = lval.properties.map(p => {
+        invariant(!t.isRestElement(p));
+        invariant(t.isIdentifier(p.key));
+        invariant(t.isIdentifier(p.value));
+        return [p.key.name, p.value.name];
+      });
+      namedImports.forEach(([k, v]) => {
+        const newName = addNamed(path, k, moduleName, { nameHint: v });
+        path.scope.rename(v, newName.name);
+      });
+    } else {
+      const oldName = lval.name;
+      const newName = addNamespace(path, moduleName);
+      path.scope.rename(oldName, newName.name);
+    }
 
     const declarationPath = declaratorPath.parentPath;
     const declaration = declarationPath.node;
@@ -105,11 +116,6 @@ function process(
     if (declaration.declarations.length === 0) {
       declarationPath.remove();
     }
-
-    namedImports.forEach(([k, v]) => {
-      const newName = addNamed(path, k, moduleName, { nameHint: v });
-      path.scope.rename(v, newName.name);
-    });
 
     const insertionIO = pipe(
       path.get("body"),

@@ -49,6 +49,21 @@ jest.mock(\\"foobar\\");"
 `);
 });
 
+it("handles assigning return value to a namespace variable", async () => {
+  const result = await assert(`
+  import { mock } from '@userlike/joke';
+  const F = mock(import('foobar'));
+  F.foo.mockReturnValue(5);
+  `);
+  expect(result).toMatchInlineSnapshot(`
+"import * as _foobar from \\"foobar\\";
+import { mock } from '@userlike/joke';
+jest.mock(\\"foobar\\");
+
+_foobar.foo.mockReturnValue(5);"
+`);
+});
+
 it("ignores mock calls inside closures", async () => {
   const result = await assert(`
     import { mock } from '@userlike/joke';
