@@ -79,19 +79,16 @@ bar.mockReturnValue(5);"
 `);
 });
 
-it("ignores mock calls inside closures", async () => {
-  const result = await assert(`
+it("throws error if mock is called inside closures", async () => {
+  const result = assert(`
     import { mock } from '@userlike/joke';
     beforeEach(() => {
       const { foo } = mock(import('foo'));
     });
     `);
-  expect(result).toMatchInlineSnapshot(`
-"import { foo as _foo } from \\"foo\\";
-import { mock } from '@userlike/joke';
-jest.mock(\\"foo\\");
-beforeEach(() => {});"
-`);
+  expect(result).rejects.toMatchInlineSnapshot(
+    `[Error: /example.ts: Can only use \`mock\` at the top-level scope.]`
+  );
 });
 
 it("throws a sensible error", async () => {

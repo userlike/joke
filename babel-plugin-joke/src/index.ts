@@ -53,7 +53,14 @@ export default function UserlikeJoke({
           })
           .map(path => path.parentPath);
 
-        const mockRefPaths = namedMockRefs.concat(namespaceMockRefs);
+        const mockRefPaths = namedMockRefs
+          .concat(namespaceMockRefs)
+          .filter(path => {
+            if (path.scope.getProgramParent() !== path.scope) {
+              throw new Error("Can only use `mock` at the top-level scope.");
+            }
+            return true;
+          });
 
         mockRefPaths.forEach(process(t, path));
       }
