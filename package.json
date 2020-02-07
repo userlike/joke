@@ -7,7 +7,11 @@
   ],
   "scripts": {
     "build": "yarn workspaces run build",
-    "test": "yarn workspaces run test"
+    "test": "yarn workspaces run test",
+    "lerna:version": "lerna version --conventional-commits",
+    "lerna:version:pre": "yarn version --conventional-prerelease",
+    "lerna:version:grad": "yarn version --conventional-graduate",
+    "lerna:publish": "lerna publish from-package"
   },
   "devDependencies": {
     "@babel/cli": "7.8.4",
