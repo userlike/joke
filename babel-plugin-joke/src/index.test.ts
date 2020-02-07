@@ -86,7 +86,7 @@ it("throws a sensible error", async () => {
     `);
 
   expect(promise).rejects.toMatchInlineSnapshot(`
-[Error: /Users/anilanar/development/joke/babel-plugin-joke/example.ts: 
+[Error: /example.ts: 
 \`mock\` must be used like:
 
 const { foo } = mock(import('moduleName'))
@@ -106,7 +106,7 @@ it("throws a sensible error when rest params are used", async () => {
     `);
 
   expect(promise).rejects.toMatchInlineSnapshot(`
-[Error: /Users/anilanar/development/joke/babel-plugin-joke/example.ts: 
+[Error: /example.ts: 
 \`mock\` must be used like:
 
 const { foo } = mock(import('moduleName'))
@@ -124,7 +124,8 @@ async function assert(code: string) {
     filename: "example.ts",
     plugins: [plugin],
     babelrc: false,
-    configFile: false
+    configFile: false,
+    cwd: "/"
   });
   return result?.code;
 }
