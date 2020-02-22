@@ -1,6 +1,6 @@
 {
   "name": "@userlike/joke-example",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -9,10 +9,10 @@
     "lint": "echo 'No linter.'"
   },
   "dependencies": {
-    "@userlike/joke": "^0.1.0-alpha.2"
+    "@userlike/joke": "^0.1.0-alpha.4"
   },
   "devDependencies": {
     "@types/jest": "25.1.2",
-    "@userlike/babel-plugin-joke": "^0.1.0-alpha.3"
+    "@userlike/babel-plugin-joke": "^0.1.0-alpha.4"
   }
 }
