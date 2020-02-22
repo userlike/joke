@@ -8,6 +8,7 @@
   "scripts": {
     "build": "yarn workspaces run build",
     "test": "yarn workspaces run test",
+    "lint": "yarn workspaces run lint",
     "lerna:version": "lerna version --conventional-commits",
     "lerna:version:pre": "yarn version --conventional-prerelease",
     "lerna:version:grad": "yarn version --conventional-graduate",
@@ -21,6 +22,9 @@
     "@babel/preset-typescript": "7.8.3",
     "@types/babel__core": "7.1.3",
     "@types/node": "13.7.0",
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
+    "eslint": "^6.8.0",
     "jest": "25.1.0",
     "lerna": "3.20.2",
     "prettier": "1.19.1",

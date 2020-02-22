@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "lint": "echo 'No linter.'"
   },
   "dependencies": {
     "@userlike/joke": "^0.1.0-alpha.2"

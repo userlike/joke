@@ -14,7 +14,8 @@
   "scripts": {
     "prepublishOnly": "yarn build",
     "build": "tsc && babel src/index.ts --out-dir dist -x '.ts'",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint src --ext .ts"
   },
   "devDependencies": {
     "@types/jest": "25.1.1"

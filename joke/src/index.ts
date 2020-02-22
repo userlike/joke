@@ -2,6 +2,7 @@
  * A better Mocked type that handles nested objects.
  */
 type Mocked<T> = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [P in keyof T]: T[P] extends (...args: any[]) => any
     ? jest.MockInstance<ReturnType<T[P]>, jest.ArgsType<T[P]>>
     : T[P] extends jest.Constructable
@@ -12,13 +13,14 @@ type Mocked<T> = {
 } &
   T;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function mock<M>(_: Promise<M>): Mocked<M> {
   const safetyObj = {};
   const safetyProxy = new Proxy(safetyObj, {
-    get() {
+    get(): never {
       throw new Error("Did you forget to use @userlike/babel-plugin-joke?");
     },
-    set() {
+    set(): never {
       throw new Error("Did you forget to use @userlike/babel-plugin-joke?");
     }
   });
@@ -29,5 +31,3 @@ export function mock<M>(_: Promise<M>): Mocked<M> {
 function unsafeCoerce<I, O>(i: I): O {
   return (i as unknown) as O;
 }
-
-"Hlel";

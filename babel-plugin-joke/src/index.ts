@@ -17,7 +17,7 @@ export default function UserlikeJoke({
   return {
     name: "@userlike/babel-plugin-joke",
     visitor: {
-      Program(path) {
+      Program(path): void {
         const statements = path.node.body;
         const namedMockRefs = statements
           .filter(pred(t.isImportDeclaration))
@@ -72,7 +72,7 @@ function process(
   t: typeof import("@babel/types"),
   path: NodePath<Program>
 ): (mockRef: NodePath) => void {
-  return mockPath => {
+  return (mockPath): void => {
     const callPath = mockPath.parentPath;
     const call = mockPath.parent;
 
@@ -143,7 +143,7 @@ function process(
     const insertJestMockIO = pipe(
       path.get("body"),
       A.findLast(p => t.isImportDeclaration(p.node)),
-      O.map(lastImportPath => () =>
+      O.map(lastImportPath => (): void =>
         lastImportPath.insertAfter(
           t.expressionStatement(
             t.callExpression(
@@ -156,7 +156,8 @@ function process(
           )
         )
       ),
-      O.getOrElse(() => () => {})
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      O.getOrElse(() => (): void => {})
     );
 
     insertJestMockIO();

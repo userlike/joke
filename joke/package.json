@@ -17,7 +17,8 @@
   "scripts": {
     "prepublishOnly": "yarn build",
     "build": "tsc && babel src/index.ts --out-dir dist -x '.ts'",
-    "test": "echo 'No tests for @userlike/joke yet.'"
+    "test": "echo 'No tests for @userlike/joke yet.'",
+    "lint": "eslint src --ext .ts"
   },
   "dependencies": {
     "@babel/runtime-corejs3": "^7.8.4",

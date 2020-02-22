@@ -131,7 +131,7 @@ Instead saw:
 `);
 });
 
-async function assert(code: string) {
+async function assert(code: string): Promise<string | undefined> {
   const result = await B.transformAsync(code, {
     filename: "example.ts",
     plugins: [plugin],
