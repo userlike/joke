@@ -1,6 +1,6 @@
 {
   "name": "@userlike/joke",
-  "version": "0.1.0-alpha.4",
+  "version": "0.1.0",
   "description": "Typesafe mock utility with minimal boilerplate for jest",
   "keywords": [
     "typescript",
