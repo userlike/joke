@@ -10,8 +10,8 @@
     "test": "yarn workspaces run test",
     "lint": "yarn workspaces run lint",
     "lerna:version": "lerna version --conventional-commits",
-    "lerna:version:pre": "yarn version --conventional-prerelease",
-    "lerna:version:grad": "yarn version --conventional-graduate",
+    "lerna:version:pre": "yarn lerna:version --conventional-prerelease",
+    "lerna:version:grad": "yarn lerna:version --conventional-graduate",
     "lerna:publish": "lerna publish from-package"
   },
   "devDependencies": {
