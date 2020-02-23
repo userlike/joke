@@ -17,23 +17,24 @@ it("common case", async () => {
   `);
 
   expect(result).toMatchInlineSnapshot(`
-    "import { bar2 as _bar2 } from \\"bar\\";
-    import { bar as _bar } from \\"bar\\";
-    import { foo2 as _foo2 } from \\"foo\\";
-    import { foo as _foo } from \\"foo\\";
+    "import * as _bar from \\"bar\\";
+    import * as _foo from \\"foo\\";
     import { mock } from '@userlike/joke';
     jest.mock(\\"bar\\");
     jest.mock(\\"foo\\");
-
-    _foo.mockReturnValue(5);
-
-    _foo2.mockReturnValue(5);
-
-    _bar.mockReturnValue(5);
-
-    _bar2.mockReturnValue(5);
-
-    [_foo, _foo2, _bar, _bar2].forEach(console.log);"
+    const {
+      foo,
+      foo2
+    } = _foo;
+    const {
+      bar,
+      bar2
+    } = _bar;
+    foo.mockReturnValue(5);
+    foo2.mockReturnValue(5);
+    bar.mockReturnValue(5);
+    bar2.mockReturnValue(5);
+    [foo, foo2, bar, bar2].forEach(console.log);"
   `);
 });
 
@@ -43,9 +44,12 @@ it("handles mock import as a namespace", async () => {
   const { foo } = M.mock(import('foobar'));
   `);
   expect(result).toMatchInlineSnapshot(`
-    "import { foo as _foo } from \\"foobar\\";
+    "import * as _foobar from \\"foobar\\";
     import * as M from '@userlike/joke';
-    jest.mock(\\"foobar\\");"
+    jest.mock(\\"foobar\\");
+    const {
+      foo
+    } = _foobar;"
   `);
 });
 
@@ -56,12 +60,12 @@ it("handles assigning return value to a namespace variable", async () => {
   F.foo.mockReturnValue(5);
   `);
   expect(result).toMatchInlineSnapshot(`
-"import * as _foobar from \\"foobar\\";
-import { mock } from '@userlike/joke';
-jest.mock(\\"foobar\\");
-
-_foobar.foo.mockReturnValue(5);"
-`);
+    "import * as _foobar from \\"foobar\\";
+    import { mock } from '@userlike/joke';
+    jest.mock(\\"foobar\\");
+    const F = _foobar;
+    F.foo.mockReturnValue(5);"
+  `);
 });
 
 it("handles member expressions", async () => {
@@ -71,12 +75,25 @@ it("handles member expressions", async () => {
   bar.mockReturnValue(5);
   `);
   expect(result).toMatchInlineSnapshot(`
-"import { foo as _foo } from \\"foobar\\";
-import { mock } from '@userlike/joke';
-jest.mock(\\"foobar\\");
-const bar = _foo.bar;
-bar.mockReturnValue(5);"
-`);
+    "import * as _foobar from \\"foobar\\";
+    import { mock } from '@userlike/joke';
+    jest.mock(\\"foobar\\");
+    const bar = _foobar.foo.bar;
+    bar.mockReturnValue(5);"
+  `);
+});
+
+it("handles just a call expression", async () => {
+  const result = await assert(`
+  import { mock } from '@userlike/joke';
+  mock(import('foobar'));
+  `);
+  expect(result).toMatchInlineSnapshot(`
+    "import * as _foobar from \\"foobar\\";
+    import { mock } from '@userlike/joke';
+    jest.mock(\\"foobar\\");
+    _foobar;"
+  `);
 });
 
 it("throws error if mock is called inside closures", async () => {
@@ -91,7 +108,24 @@ it("throws error if mock is called inside closures", async () => {
   );
 });
 
-it("throws a sensible error", async () => {
+it("works with rest params", async () => {
+  const promise = assert(`
+    import { mock } from '@userlike/joke';
+    const { foo, ...bar } = mock(import('foobar'));
+    `);
+
+  expect(promise).resolves.toMatchInlineSnapshot(`
+"import * as _foobar from \\"foobar\\";
+import { mock } from '@userlike/joke';
+jest.mock(\\"foobar\\");
+const {
+  foo,
+  ...bar
+} = _foobar;"
+`);
+});
+
+it("throws a sensible error on invalid usage", async () => {
   const promise = assert(`
     import { mock } from '@userlike/joke';
     mock('foo');
@@ -101,31 +135,11 @@ it("throws a sensible error", async () => {
 [Error: /example.ts: 
 \`mock\` must be used like:
 
-const { foo } = mock(import('moduleName'))
+mock(import('moduleName'))
 
 Instead saw:
 
 mock('foo')
-
-]
-`);
-});
-
-it("throws a sensible error when rest params are used", async () => {
-  const promise = assert(`
-    import { mock } from '@userlike/joke';
-    const { foo, ...bar } = mock(import('foobar'));
-    `);
-
-  expect(promise).rejects.toMatchInlineSnapshot(`
-[Error: /example.ts: 
-\`mock\` must be used like:
-
-const { foo } = mock(import('moduleName'))
-
-Instead saw:
-
-{ foo, ...bar } = mock(import('foobar'))
 
 ]
 `);

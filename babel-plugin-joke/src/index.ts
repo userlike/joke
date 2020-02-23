@@ -87,58 +87,8 @@ function process(
     invariant(t.isStringLiteral(moduleNameLiteral), callPath);
     const moduleName = moduleNameLiteral.value;
 
-    const parentPath = callPath.parentPath;
-
-    invariant(
-      t.isVariableDeclarator(parentPath.node) ||
-        t.isMemberExpression(parentPath.node),
-      parentPath
-    );
-
-    if (t.isVariableDeclarator(parentPath.node)) {
-      const declaratorPath = parentPath;
-      const declarator = parentPath.node;
-      invariant(t.isVariableDeclarator(declarator), declaratorPath);
-
-      const lval = declarator.id;
-
-      invariant(
-        t.isObjectPattern(lval) || t.isIdentifier(lval),
-        declaratorPath
-      );
-
-      if (t.isObjectPattern(lval)) {
-        const namedImports = lval.properties.map(p => {
-          invariant(!t.isRestElement(p), declaratorPath);
-          invariant(t.isIdentifier(p.key), declaratorPath);
-          invariant(t.isIdentifier(p.value), declaratorPath);
-          return [p.key.name, p.value.name];
-        });
-        namedImports.forEach(([k, v]) => {
-          const newName = addNamed(path, k, moduleName, { nameHint: v });
-          path.scope.rename(v, newName.name);
-        });
-      } else {
-        const oldName = lval.name;
-        const newName = addNamespace(path, moduleName);
-        path.scope.rename(oldName, newName.name);
-      }
-      const declarationPath = declaratorPath.parentPath;
-      const declaration = declarationPath.node;
-      invariant(t.isVariableDeclaration(declaration), declarationPath);
-      const idx = declaration.declarations.findIndex(d => d === declarator);
-      declaration.declarations.splice(idx, 1);
-
-      if (declaration.declarations.length === 0) {
-        declarationPath.remove();
-      }
-    } else {
-      const memberExpr = parentPath.node;
-      const named = memberExpr.property;
-      invariant(t.isIdentifier(named), parentPath);
-      const newName = addNamed(path, named.name, moduleName);
-      parentPath.replaceWith(t.identifier(newName.name));
-    }
+    const namespaceName = addNamespace(path, moduleName);
+    callPath.replaceWith(t.identifier(namespaceName.name));
 
     const insertJestMockIO = pipe(
       path.get("body"),
@@ -176,7 +126,7 @@ function throwErr(path: NodePath): never {
   throw new Error(
     "\n" +
       "`mock` must be used like:\n\n" +
-      "const { foo } = mock(import('moduleName'))\n\n" +
+      "mock(import('moduleName'))\n\n" +
       "Instead saw:\n\n" +
       path.getSource() +
       "\n\n"
