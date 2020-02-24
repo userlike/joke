@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-alpha.2](https://github.com/userlike/joke/compare/v0.2.0-alpha.1...v0.2.0-alpha.2) (2020-02-24)
+
+
+### Bug Fixes
+
+* **babel:** fix requireActual wrong param ([27b6140](https://github.com/userlike/joke/commit/27b6140f590a9eb2dc8c1ff9293bfc71279f6360))
+
+
+
+
+
 # [0.2.0-alpha.1](https://github.com/userlike/joke/compare/v0.2.0-alpha.0...v0.2.0-alpha.1) (2020-02-24)
 
 
