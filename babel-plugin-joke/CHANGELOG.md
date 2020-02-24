@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-alpha.1](https://github.com/userlike/joke/compare/v0.2.0-alpha.0...v0.2.0-alpha.1) (2020-02-24)
+
+
+### Features
+
+* support custom mock implementations ([#1](https://github.com/userlike/joke/issues/1)) ([3eb5d53](https://github.com/userlike/joke/commit/3eb5d530c06949e9b2c93a8e98ae5c58f76597d7))
+
+
+
+
+
 # [0.2.0-alpha.0](https://github.com/userlike/joke/compare/v0.1.0...v0.2.0-alpha.0) (2020-02-23)
 
 
