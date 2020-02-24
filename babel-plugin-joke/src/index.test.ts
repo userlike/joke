@@ -125,6 +125,26 @@ const {
 `);
 });
 
+it("allows custom module implementation to be passed", async () => {
+  const promise = assert(`
+    import { mock } from '@userlike/joke';
+    const { foo } = mock(import('foobar'), () => ({
+      foo: 5
+    }));
+    `);
+
+  expect(promise).resolves.toMatchInlineSnapshot(`
+"import * as _foobar from \\"foobar\\";
+import { mock } from '@userlike/joke';
+jest.mock(\\"foobar\\", () => Object.assign({}, jest.requireMock(foobar), (() => ({
+  foo: 5
+}))()));
+const {
+  foo
+} = _foobar;"
+`);
+});
+
 it("throws a sensible error on invalid usage", async () => {
   const promise = assert(`
     import { mock } from '@userlike/joke';

@@ -8,6 +8,7 @@ module.exports = {
     "plugin:@typescript-eslint/recommended"
   ],
   rules: {
-    "@typescript-eslint/no-use-before-define": ["error", { functions: false }]
+    "@typescript-eslint/no-use-before-define": ["error", { functions: false }],
+    "@typescript-eslint/no-unused-vars": "off"
   }
 };
