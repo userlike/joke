@@ -13,8 +13,15 @@ type Mocked<T> = {
 } &
   T;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function mock<M>(_: Promise<M>): Mocked<M> {
+export function mock<M>(_: Promise<M>): Mocked<M>;
+export function mock<M, P extends Partial<M>>(
+  _: Promise<M>,
+  _impl: () => P
+): Mocked<P>;
+export function mock<M>(
+  _: Promise<M>,
+  _impl: () => Partial<M> = (): Partial<M> => ({})
+): Mocked<M> {
   const safetyObj = {};
   const safetyProxy = new Proxy(safetyObj, {
     get(): never {

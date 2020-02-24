@@ -1,19 +1,28 @@
 import { pipe } from "fp-ts/lib/pipeable";
 import * as A from "fp-ts/lib/Array";
 import * as O from "fp-ts/lib/Option";
-import { addNamed, addNamespace } from "@babel/helper-module-imports";
+import { addNamespace } from "@babel/helper-module-imports";
 import { PluginObj } from "@babel/core";
 import { Binding, NodePath } from "@babel/traverse";
-import { Program } from "@babel/types";
+import {
+  Program,
+  Expression,
+  ArgumentPlaceholder,
+  JSXNamespacedName,
+  SpreadElement,
+  ArrowFunctionExpression
+} from "@babel/types";
 
 const MODULE_NAME = "@userlike/joke";
 const IMPORT_FN = "mock";
 const GLOBAL_JEST = "jest";
-const GLOBAL_JEST_FN = "mock";
+const GLOBAL_JEST_MOCK = "mock";
+const GLOBAL_JEST_REQUIRE_MOCK = "requireMock";
 
-export default function UserlikeJoke({
-  types: t
-}: typeof import("@babel/core")): PluginObj {
+type B = typeof import("@babel/core");
+type T = B["types"];
+
+export default function UserlikeJoke({ types: t }: B): PluginObj {
   return {
     name: "@userlike/babel-plugin-joke",
     visitor: {
@@ -76,15 +85,18 @@ function process(
     const callPath = mockPath.parentPath;
     const call = mockPath.parent;
 
-    invariant(t.isCallExpression(call), callPath);
+    invariantPath(t.isCallExpression(call), callPath);
 
     const asyncImport = call.arguments[0];
-    invariant(t.isCallExpression(asyncImport), callPath);
-    invariant(t.isImport(asyncImport.callee), callPath);
-    invariant(asyncImport.arguments.length === 1, callPath);
+    const moduleImplementation: typeof call.arguments[1] | undefined =
+      call.arguments[1];
+
+    invariantPath(t.isCallExpression(asyncImport), callPath);
+    invariantPath(t.isImport(asyncImport.callee), callPath);
+    invariantPath(asyncImport.arguments.length === 1, callPath);
 
     const moduleNameLiteral = asyncImport.arguments[0];
-    invariant(t.isStringLiteral(moduleNameLiteral), callPath);
+    invariantPath(t.isStringLiteral(moduleNameLiteral), callPath);
     const moduleName = moduleNameLiteral.value;
 
     const namespaceName = addNamespace(path, moduleName);
@@ -99,9 +111,14 @@ function process(
             t.callExpression(
               t.memberExpression(
                 t.identifier(GLOBAL_JEST),
-                t.identifier(GLOBAL_JEST_FN)
+                t.identifier(GLOBAL_JEST_MOCK)
               ),
-              [t.stringLiteral(moduleName)]
+              moduleImplementation === undefined
+                ? [t.stringLiteral(moduleName)]
+                : [
+                    t.stringLiteral(moduleName),
+                    mockImplementation(t, moduleName, moduleImplementation)
+                  ]
             )
           )
         )
@@ -114,14 +131,48 @@ function process(
   };
 }
 
+/**
+ * Converts `() => x` to `() => Object.assign({}, jest.requireMock('modulename'), (() => x)())`.
+ */
+function mockImplementation(
+  t: T,
+  moduleName: string,
+  impl: Expression | SpreadElement | JSXNamespacedName | ArgumentPlaceholder
+): ArrowFunctionExpression {
+  invariant(
+    t.isFunctionExpression(impl) || t.isArrowFunctionExpression(impl),
+    `Unexpected second argument to \`mock\` of type ${impl.type}, expected FunctionExpression of ArrowFunctionExpression.`
+  );
+  const iife = t.callExpression(impl, []);
+  const requireMock = t.callExpression(
+    t.memberExpression(
+      t.identifier(GLOBAL_JEST),
+      t.identifier(GLOBAL_JEST_REQUIRE_MOCK)
+    ),
+    [t.identifier(moduleName)]
+  );
+  const objectAssign = t.callExpression(
+    t.memberExpression(t.identifier("Object"), t.identifier("assign")),
+    [t.objectExpression([]), requireMock, iife]
+  );
+  const wrappedImpl = t.arrowFunctionExpression([], objectAssign);
+  return wrappedImpl;
+}
+
 function pred<T, R extends T>(predicate: (x: T) => x is R): (x: T) => x is R {
   return predicate;
 }
 
-function invariant(condition: boolean, path: NodePath): asserts condition {
+function invariantPath(condition: boolean, path: NodePath): asserts condition {
   if (condition) return;
   throwErr(path);
 }
+
+function invariant(condition: boolean, msg: string): asserts condition {
+  if (condition) return;
+  throw new Error(msg);
+}
+
 function throwErr(path: NodePath): never {
   throw new Error(
     "\n" +
