@@ -149,7 +149,7 @@ function mockImplementation(
       t.identifier(GLOBAL_JEST),
       t.identifier(GLOBAL_JEST_REQUIRE_MOCK)
     ),
-    [t.identifier(moduleName)]
+    [t.stringLiteral(moduleName)]
   );
   const objectAssign = t.callExpression(
     t.memberExpression(t.identifier("Object"), t.identifier("assign")),
