@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/userlike/joke/compare/v0.2.0...v0.3.0) (2020-02-26)
+
+
+### Features
+
+* add mockSome for partial mocking of modules ([0e92c8a](https://github.com/userlike/joke/commit/0e92c8a285de8b0f1ff4fdc57c82e206f8d876fa))
+
+
+
+
+
 # [0.2.0](https://github.com/userlike/joke/compare/v0.2.0-alpha.3...v0.2.0) (2020-02-26)
 
 **Note:** Version bump only for package @userlike/babel-plugin-joke
