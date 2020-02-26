@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-alpha.3](https://github.com/userlike/joke/compare/v0.2.0-alpha.2...v0.2.0-alpha.3) (2020-02-26)
+
+
+### Bug Fixes
+
+* **babel:** fix several bugs with 2nd arg of mock ([46ccd54](https://github.com/userlike/joke/commit/46ccd54f8fd37d4750440bbe9192f544b31b604c))
+
+
+
+
+
 # [0.2.0-alpha.2](https://github.com/userlike/joke/compare/v0.2.0-alpha.1...v0.2.0-alpha.2) (2020-02-24)
 
 
