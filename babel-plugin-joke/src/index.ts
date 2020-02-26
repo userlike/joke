@@ -13,73 +13,95 @@ import {
   ArrowFunctionExpression
 } from "@babel/types";
 
-const MODULE_NAME = "@userlike/joke";
-const IMPORT_FN = "mock";
+const JOKE_MODULE = "@userlike/joke";
+const JOKE_MOCK = "mock";
+const JOKE_MOCK_SOME = "mockSome";
 const JEST = "jest";
 const JEST_MOCK = "mock";
 const JEST_GEN_MOCK_FROM_MODULE = "genMockFromModule";
+const JEST_REQUIRE_ACTUAL = "requireActual";
 
 type B = typeof import("@babel/core");
 type T = B["types"];
+
+enum MockExtendType {
+  ExtendMocked,
+  ExtendActual
+}
 
 export default function UserlikeJoke({ types: t }: B): PluginObj {
   return {
     name: "@userlike/babel-plugin-joke",
     visitor: {
       Program(path): void {
-        const statements = path.node.body;
-        const namedMockRefs = statements
-          .filter(pred(t.isImportDeclaration))
-          .filter(s => s.source.value === MODULE_NAME)
-          .flatMap(s => s.specifiers)
-          .filter(pred(t.isImportSpecifier))
-          .filter(s => s.imported.name === IMPORT_FN)
-          .map(s => s.local.name)
-          .map(ref => path.scope.getBinding(ref))
-          .filter((ref): ref is Binding => ref !== undefined)
-          .flatMap(ref => ref.referencePaths);
+        const mockCalls = getJokeMockCalls(t, path, JOKE_MOCK);
+        mockCalls.forEach(
+          convertMockCalls(t, path, MockExtendType.ExtendMocked)
+        );
 
-        const namespaceMockRefs = statements
-          .filter(pred(t.isImportDeclaration))
-          .filter(s => s.source.value === MODULE_NAME)
-          .flatMap(s => s.specifiers)
-          .filter(pred(t.isImportNamespaceSpecifier))
-          .map(s => s.local.name)
-          .map(ref => path.scope.getBinding(ref))
-          .filter((ref): ref is Binding => ref !== undefined)
-          .flatMap(ref => ref.referencePaths)
-          .filter(path => {
-            const M = path.node;
-            const memberExpr = path.parent;
-            if (!t.isMemberExpression(memberExpr)) return false;
-            if (memberExpr.object !== M) return false;
-            if (
-              !t.isIdentifier(memberExpr.property) ||
-              memberExpr.property.name !== "mock"
-            )
-              return false;
-            return true;
-          })
-          .map(path => path.parentPath);
-
-        const mockRefPaths = namedMockRefs
-          .concat(namespaceMockRefs)
-          .filter(path => {
-            if (path.scope.getProgramParent() !== path.scope) {
-              throw new Error("Can only use `mock` at the top-level scope.");
-            }
-            return true;
-          });
-
-        mockRefPaths.forEach(process(t, path));
+        const mockSomeCalls = getJokeMockCalls(t, path, JOKE_MOCK_SOME);
+        mockSomeCalls.forEach(
+          convertMockCalls(t, path, MockExtendType.ExtendActual)
+        );
       }
     }
   };
 }
 
-function process(
+function getJokeMockCalls(
+  t: T,
+  path: NodePath<Program>,
+  fnName: string
+): NodePath[] {
+  const statements = path.node.body;
+  const namedMockRefs = statements
+    .filter(pred(t.isImportDeclaration))
+    .filter(s => s.source.value === JOKE_MODULE)
+    .flatMap(s => s.specifiers)
+    .filter(pred(t.isImportSpecifier))
+    .filter(s => s.imported.name === fnName)
+    .map(s => s.local.name)
+    .map(ref => path.scope.getBinding(ref))
+    .filter((ref): ref is Binding => ref !== undefined)
+    .flatMap(ref => ref.referencePaths);
+
+  const namespaceMockRefs = statements
+    .filter(pred(t.isImportDeclaration))
+    .filter(s => s.source.value === JOKE_MODULE)
+    .flatMap(s => s.specifiers)
+    .filter(pred(t.isImportNamespaceSpecifier))
+    .map(s => s.local.name)
+    .map(ref => path.scope.getBinding(ref))
+    .filter((ref): ref is Binding => ref !== undefined)
+    .flatMap(ref => ref.referencePaths)
+    .filter(path => {
+      const M = path.node;
+      const memberExpr = path.parent;
+      if (!t.isMemberExpression(memberExpr)) return false;
+      if (memberExpr.object !== M) return false;
+      if (
+        !t.isIdentifier(memberExpr.property) ||
+        memberExpr.property.name !== fnName
+      )
+        return false;
+      return true;
+    })
+    .map(path => path.parentPath);
+
+  const mockRefPaths = namedMockRefs.concat(namespaceMockRefs).filter(path => {
+    if (path.scope.getProgramParent() !== path.scope) {
+      throw new Error("Can only use `mock` at the top-level scope.");
+    }
+    return true;
+  });
+
+  return mockRefPaths;
+}
+
+function convertMockCalls(
   t: typeof import("@babel/types"),
-  path: NodePath<Program>
+  path: NodePath<Program>,
+  mockExtendType: MockExtendType
 ): (mockRef: NodePath) => void {
   return (mockPath): void => {
     const callPath = mockPath.parentPath;
@@ -114,7 +136,12 @@ function process(
                 ? [t.stringLiteral(moduleName)]
                 : [
                     t.stringLiteral(moduleName),
-                    mockImplementation(t, moduleName, moduleImplementation)
+                    mockImplementation(
+                      t,
+                      moduleName,
+                      moduleImplementation,
+                      mockExtendType
+                    )
                   ]
             )
           )
@@ -129,12 +156,13 @@ function process(
 }
 
 /**
- * Converts `() => x` to `() => Object.assign({}, jest.requireMock('modulename'), (() => x)())`.
+ * Converts `() => x` to `() => Object.assign({}, jest.genMockFromModul('modulename'), (() => x)())`.
  */
 function mockImplementation(
   t: T,
   moduleName: string,
-  impl: Expression | SpreadElement | JSXNamespacedName | ArgumentPlaceholder
+  impl: Expression | SpreadElement | JSXNamespacedName | ArgumentPlaceholder,
+  mockType: MockExtendType
 ): ArrowFunctionExpression {
   invariant(
     t.isFunctionExpression(impl) || t.isArrowFunctionExpression(impl),
@@ -144,7 +172,11 @@ function mockImplementation(
   const requireMock = t.callExpression(
     t.memberExpression(
       t.identifier(JEST),
-      t.identifier(JEST_GEN_MOCK_FROM_MODULE)
+      t.identifier(
+        mockType === MockExtendType.ExtendMocked
+          ? JEST_GEN_MOCK_FROM_MODULE
+          : JEST_REQUIRE_ACTUAL
+      )
     ),
     [t.stringLiteral(moduleName)]
   );

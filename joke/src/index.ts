@@ -1,5 +1,5 @@
 /**
- * A better Mocked type that handles nested objects.
+ * (Hopefully) A better Mocked type that handles nested objects.
  */
 type Mocked<T> = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -13,15 +13,35 @@ type Mocked<T> = {
 } &
   T;
 
+/**
+ *
+ * @param _ Dynamic imported module
+ */
 export function mock<M>(_: Promise<M>): Mocked<M>;
-export function mock<M, P extends Partial<M>>(
-  _: Promise<M>,
-  _impl: () => P
-): Mocked<P>;
+
+/**
+ *
+ * @param _impl Mock factory that returns a partial implementation. The returned object is merged
+ * with auto-generated module mock using `Object.assign`.
+ */
+export function mock<M>(_: Promise<M>, _impl: () => Partial<M>): Mocked<M>;
 export function mock<M>(
   _: Promise<M>,
   _impl: () => Partial<M> = (): Partial<M> => ({})
 ): Mocked<M> {
+  return unsafeCoerce(mockSafetyNet());
+}
+
+export function mockSome<M, K extends keyof M>(
+  _: Promise<M>,
+  _impl: () => {
+    [_K in K]: Mocked<M>[_K];
+  }
+): Omit<M, K> & Pick<Mocked<M>, K> {
+  return unsafeCoerce(mockSafetyNet());
+}
+
+function mockSafetyNet(): unknown {
   const safetyObj = {};
   const safetyProxy = new Proxy(safetyObj, {
     get(): never {
@@ -32,7 +52,7 @@ export function mock<M>(
     }
   });
 
-  return unsafeCoerce(safetyProxy);
+  return safetyProxy;
 }
 
 function unsafeCoerce<I, O>(i: I): O {
