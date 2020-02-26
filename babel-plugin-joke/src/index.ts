@@ -15,9 +15,9 @@ import {
 
 const MODULE_NAME = "@userlike/joke";
 const IMPORT_FN = "mock";
-const GLOBAL_JEST = "jest";
-const GLOBAL_JEST_MOCK = "mock";
-const GLOBAL_JEST_REQUIRE_MOCK = "requireMock";
+const JEST = "jest";
+const JEST_MOCK = "mock";
+const JEST_GEN_MOCK_FROM_MODULE = "genMockFromModule";
 
 type B = typeof import("@babel/core");
 type T = B["types"];
@@ -109,10 +109,7 @@ function process(
         lastImportPath.insertAfter(
           t.expressionStatement(
             t.callExpression(
-              t.memberExpression(
-                t.identifier(GLOBAL_JEST),
-                t.identifier(GLOBAL_JEST_MOCK)
-              ),
+              t.memberExpression(t.identifier(JEST), t.identifier(JEST_MOCK)),
               moduleImplementation === undefined
                 ? [t.stringLiteral(moduleName)]
                 : [
@@ -146,13 +143,16 @@ function mockImplementation(
   const iife = t.callExpression(impl, []);
   const requireMock = t.callExpression(
     t.memberExpression(
-      t.identifier(GLOBAL_JEST),
-      t.identifier(GLOBAL_JEST_REQUIRE_MOCK)
+      t.identifier(JEST),
+      t.identifier(JEST_GEN_MOCK_FROM_MODULE)
     ),
     [t.stringLiteral(moduleName)]
   );
   const objectAssign = t.callExpression(
-    t.memberExpression(t.identifier("Object"), t.identifier("assign")),
+    t.memberExpression(
+      t.memberExpression(t.identifier("global"), t.identifier("Object")),
+      t.identifier("assign")
+    ),
     [t.objectExpression([]), requireMock, iife]
   );
   const wrappedImpl = t.arrowFunctionExpression([], objectAssign);

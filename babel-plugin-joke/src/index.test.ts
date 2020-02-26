@@ -136,7 +136,7 @@ it("allows custom module implementation to be passed", async () => {
   expect(promise).resolves.toMatchInlineSnapshot(`
 "import * as _foobar from \\"foobar\\";
 import { mock } from '@userlike/joke';
-jest.mock(\\"foobar\\", () => Object.assign({}, jest.requireMock(\\"foobar\\"), (() => ({
+jest.mock(\\"foobar\\", () => global.Object.assign({}, jest.genMockFromModule(\\"foobar\\"), (() => ({
   foo: 5
 }))()));
 const {
