@@ -1,61 +1,87 @@
+## 🍭 joke
+
 `joke` is a typesafe, boilerplate version of `jest.mock`.
 
-To be able to use `jest.mock` in Typescript, 3 lines of code is needed in the best scenario. The effect multiplies when you need to mock multiple modules. If you mock 3 modules, you will need 9 lines of code. `joke` reduces 9 lines to 3 lines:
+## Advantages
 
-```typescript
-import * as M from './math';
+- Less boilerplate than `jest.mock`.
+- Type-safe imports. No more type-casting.
+- TS/JS Language Server recognizes them when moving files around.
+- Supports partial mocking (`mockSome`).
 
-jest.mock('./math');
-const { add, multiply } = M as jest.Mocked<typeof M>;
+## Usage
 
-// And finally, we can use mock utilities
-add.mockReturnValue(5);
-```
-
-With `joke`, it's reduced to a single line:
-
-```typescript
-const { add, multiply } = mock(import('./math'));
-
-// We can already use mock utilities
-add.mockReturnValue(5);
-```
-
-## Install
-
-### npm
+### Install
 
 ```
 npm install --saveDev @userlike/joke @userlike/babel-plugin-joke
 ```
 
-### yarn
-
 ```
 yarn add -D @userlike/joke @userlike/babel-plugin-joke
 ```
 
-### Babel config 
+### Babel config
 
 Add `@userlike/babel-plugin-joke` to your babel plugins.
 
-## Usage
-
-See `joke-example` directory for a full example.
+### And use
 
 ```typescript
 import { mock } from "@userlike/joke";
-import { multiply } from "./multiply";
 
-// Mock add module
-const { add } = mock(import("./add"));
+const { fetchUser } = mock(import("./service"));
 
-add.mockImplementation((a, b) => a + b);
+fetchUser.mockReturnValue(Promise.resolve({ id: 1, name: "Jane Doe" }));
+```
 
-it("mocks multiply", () => {
-  multiply(2, 3);
+---
 
-  expect(add).toBeCalledWith(2, 2);
-  expect(add).toBeCalledWith(4, 2);
-  expect(add).toBeCalledTimes(2);
+## Full mocking
+
+Mock the whole module.
+
+```typescript
+import { mock } from "@userlike/joke";
+
+const { fetchUser } = mock(import("./service"));
+
+fetchUser.mockReturnValue(Promise.resolve({ id: 1, name: "Jane Doe" }));
+```
+
+### Full mocking with partial implementation
+
+Use the second argument of `mock` to provide some implementation.
+
+```typescript
+import { mock } from "@userlike/joke";
+
+const { fetchUser } = mock(import("./service"), () => ({
+  fetchUser: () => Promise.resolve({ id: 1, name: "Jane Doe" })
+}));
+```
+
+---
+
+## Partial mocking
+
+When you need to mock a module partially, but to keep the rest of the module unmocked, you can use `mockSome`.
+
+```typescript
+import { mockSome } from "@userlike/joke";
+import { renderUser } from "./my-component";
+
+// fetchUser is mocked, getUserId is the real implementation
+const { fetchUser, getUserId } = mockSome(import("./service"), () => ({
+  fetchUser: jest.fn()
+}));
+
+test(async () => {
+  const user = { id: 1, name: "Jane Doe" };
+  fetchUser.mockReturnValue(Promise.resolve(user));
+
+  await renderUser();
+
+  expect(document.getElementById("#user-id").innerText).toBe(getUserId(user));
 });
+```
