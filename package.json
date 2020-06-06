@@ -1,4 +1,5 @@
 {
+  "name": "joke",
   "private": true,
   "workspaces": [
     "babel-plugin-joke",
@@ -6,6 +7,7 @@
     "joke-example"
   ],
   "scripts": {
+    "commit": "git-cz",
     "build": "yarn workspaces run build",
     "test": "yarn workspaces run test",
     "lint": "yarn workspaces run lint",
@@ -24,11 +26,17 @@
     "@types/node": "13.7.0",
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "@typescript-eslint/parser": "^2.20.0",
+    "commitizen": "^4.1.2",
+    "cz-lerna-changelog": "^2.0.2",
     "eslint": "^6.8.0",
     "jest": "25.1.0",
     "lerna": "3.20.2",
     "prettier": "1.19.1",
     "typescript": "3.7.5"
   },
-  "name": "joke"
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-lerna-changelog"
+    }
+  }
 }
