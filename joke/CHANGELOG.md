@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0](https://github.com/anilanar/dev/compare/v0.3.0...v1.0.0) (2020-07-16)
+
+
+### Bug Fixes
+
+* make @types/jest a peer dependency ([2d7ad17](https://github.com/anilanar/dev/commit/2d7ad17f008308ac3d08570a86d372132872b1d6)), closes [#5](https://github.com/anilanar/dev/issues/5)
+
+
+### BREAKING CHANGES
+
+* @types/jest has become a peer dependency so if you don't have it in your dependencies, you must add
+it now.
+
+
+
+
+
 # [1.0.0-alpha.0](https://github.com/anilanar/dev/compare/v0.3.0...v1.0.0-alpha.0) (2020-07-01)
 
 
