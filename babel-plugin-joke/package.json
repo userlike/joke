@@ -1,6 +1,6 @@
 {
   "name": "@userlike/babel-plugin-joke",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Typesafe mock utility with minimal boilerplate for jest",
   "keywords": [
     "typescript",
