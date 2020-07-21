@@ -1,6 +1,6 @@
 ## 🍭 joke
 
-`joke` is a typesafe, boilerplate version of `jest.mock`.
+`joke` is a typesafe, boilerplate free version of `jest.mock`.
 
 ## Advantages
 
