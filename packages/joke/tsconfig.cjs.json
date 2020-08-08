@@ -1,9 +1,9 @@
 {
-  "extends": "../../config/tsconfig.es.json",
+  "extends": "../../config/tsconfig.cjs.json",
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.test.ts"],
   "compilerOptions": {
-    "outDir": "dist/es",
+    "outDir": "dist/cjs",
     "rootDir": "src",
     "types": ["jest"]
   }

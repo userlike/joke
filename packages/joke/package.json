@@ -1,28 +1,28 @@
 {
   "name": "@userlike/joke",
   "version": "1.0.2",
-  "description": "Typesafe mock utility with minimal boilerplate for jest",
-  "keywords": [
-    "typescript",
-    "jest",
-    "mock"
-  ],
-  "author": {
-    "name": "Anil Anar",
-    "email": "mail@anilanar.me"
+  "main": "dist/cjs/index.js",
+  "module": "dist/es/index.js",
+  "types": "dist/es/index.d.ts",
+  "sideEffects": false,
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": "github:anilanar/mklib",
+    "directory": "packages/joke"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "author": "Anil Anar &lt;mail@anilanar.me&gt;",
   "license": "MIT",
+  "files": [
+    "dist/es",
+    "dist/cjs"
+  ],
   "scripts": {
-    "prepublishOnly": "yarn build",
-    "build": "tsc && babel src/index.ts --out-dir dist -x '.ts'",
-    "test": "echo 'No tests for @userlike/joke yet.'",
-    "lint": "eslint src --ext .ts"
-  },
-  "dependencies": {
-    "@babel/runtime-corejs3": "^7.8.4",
-    "core-js-pure": "^3.6.4"
+    "build": "tsc",
+    "build:cjs": "tsc -b tsconfig.cjs.json",
+    "clean": "rm -rf dist",
+    "lint": "eslint src --ext .ts",
+    "test": "exit 0"
   },
   "peerDependencies": {
     "@types/jest": ">=15.0.0 <=26"

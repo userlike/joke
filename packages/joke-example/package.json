@@ -1,12 +1,14 @@
 {
-  "name": "@userlike/joke-example",
+  "name": "joke-example",
+  "private": true,
   "version": "1.0.2",
   "license": "MIT",
-  "private": true,
   "scripts": {
     "build": "tsc",
-    "test": "jest",
-    "lint": "echo 'No linter.'"
+    "build:cjs": "tsc -b tsconfig.cjs.json",
+    "clean": "rm -rf dist",
+    "lint": "eslint src --ext .ts",
+    "test": "jest"
   },
   "dependencies": {
     "@userlike/joke": "^1.0.2"
