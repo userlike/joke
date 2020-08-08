@@ -1,10 +1,13 @@
 {
   "name": "joke",
-  "homepage": "https://github.com/@userlike/joke",
-  "repository": "https://github.com/@userlike/joke.git",
+  "homepage": "https://github.com/userlike/joke",
+  "repository": "https://github.com/userlike/joke.git",
   "private": true,
   "workspaces": ["packages/*"],
+  "scripts": {
+    "prepare": "mklib prepare"
+  },
   "devDependencies": {
-    "@anilanar/mklib": "^1.0.11"
+    "@anilanar/mklib": "^1.0.15"
   }
 }

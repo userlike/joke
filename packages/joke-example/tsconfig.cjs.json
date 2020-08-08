@@ -1,10 +1,9 @@
 {
-  "extends": "../../config/tsconfig.es.json",
+  "extends": "../../config/tsconfig.cjs.json",
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.test.ts"],
   "compilerOptions": {
-    "module": "ES2020",
-    "outDir": "dist/es",
+    "outDir": "dist/cjs",
     "rootDir": "src"
   }
 }

@@ -115,14 +115,14 @@ it("works with rest params", async () => {
     `);
 
   expect(promise).resolves.toMatchInlineSnapshot(`
-"import * as _foobar from \\"foobar\\";
-import { mock } from '@userlike/joke';
-jest.mock(\\"foobar\\");
-const {
-  foo,
-  ...bar
-} = _foobar;"
-`);
+    "import * as _foobar from \\"foobar\\";
+    import { mock } from '@userlike/joke';
+    jest.mock(\\"foobar\\");
+    const {
+      foo,
+      ...bar
+    } = _foobar;"
+  `);
 });
 
 it("allows custom module implementation to be passed", async () => {
@@ -134,15 +134,15 @@ it("allows custom module implementation to be passed", async () => {
     `);
 
   expect(promise).resolves.toMatchInlineSnapshot(`
-"import * as _foobar from \\"foobar\\";
-import { mock } from '@userlike/joke';
-jest.mock(\\"foobar\\", () => global.Object.assign({}, jest.genMockFromModule(\\"foobar\\"), (() => ({
-  foo: 5
-}))()));
-const {
-  foo
-} = _foobar;"
-`);
+    "import * as _foobar from \\"foobar\\";
+    import { mock } from '@userlike/joke';
+    jest.mock(\\"foobar\\", () => global.Object.assign({}, jest.genMockFromModule(\\"foobar\\"), (() => ({
+      foo: 5
+    }))()));
+    const {
+      foo
+    } = _foobar;"
+  `);
 });
 
 it("throws a sensible error on invalid usage", async () => {
@@ -152,26 +152,26 @@ it("throws a sensible error on invalid usage", async () => {
     `);
 
   expect(promise).rejects.toMatchInlineSnapshot(`
-[Error: /example.ts: 
-\`mock\` must be used like:
+    [Error: /example.ts: 
+    \`mock\` must be used like:
 
-mock(import('moduleName'))
+    mock(import('moduleName'))
 
-Instead saw:
+    Instead saw:
 
-mock('foo')
+    mock('foo')
 
-]
-`);
+    ]
+  `);
 });
 
-async function assert(code: string): Promise<string | undefined> {
+async function assert(code: string): Promise<string | null | undefined> {
   const result = await B.transformAsync(code, {
     filename: "example.ts",
     plugins: [plugin],
     babelrc: false,
     configFile: false,
-    cwd: "/"
+    cwd: "/",
   });
   return result?.code;
 }

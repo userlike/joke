@@ -49,7 +49,7 @@ function mockSafetyNet(): unknown {
     },
     set(): never {
       throw new Error("Did you forget to use @userlike/babel-plugin-joke?");
-    }
+    },
   });
 
   return safetyProxy;

@@ -1,16 +1,16 @@
-import { pipe } from "fp-ts/lib/pipeable";
-import * as A from "fp-ts/lib/Array";
-import * as O from "fp-ts/lib/Option";
+import { pipe } from "fp-ts/pipeable";
+import * as A from "fp-ts/Array";
+import * as O from "fp-ts/Option";
 import { addNamespace } from "@babel/helper-module-imports";
-import { PluginObj } from "@babel/core";
-import { Binding, NodePath } from "@babel/traverse";
+import type { PluginObj } from "@babel/core";
+import type { Binding, NodePath } from "@babel/traverse";
 import {
   Program,
   Expression,
   ArgumentPlaceholder,
   JSXNamespacedName,
   SpreadElement,
-  ArrowFunctionExpression
+  ArrowFunctionExpression,
 } from "@babel/types";
 
 const JOKE_MODULE = "@userlike/joke";
@@ -26,7 +26,7 @@ type T = B["types"];
 
 enum MockExtendType {
   ExtendMocked,
-  ExtendActual
+  ExtendActual,
 }
 
 export default function UserlikeJoke({ types: t }: B): PluginObj {
@@ -43,8 +43,8 @@ export default function UserlikeJoke({ types: t }: B): PluginObj {
         mockSomeCalls.forEach(
           convertMockCalls(t, path, MockExtendType.ExtendActual)
         );
-      }
-    }
+      },
+    },
   };
 }
 
@@ -54,27 +54,32 @@ function getJokeMockCalls(
   fnName: string
 ): NodePath[] {
   const statements = path.node.body;
-  const namedMockRefs = statements
-    .filter(pred(t.isImportDeclaration))
-    .filter(s => s.source.value === JOKE_MODULE)
-    .flatMap(s => s.specifiers)
-    .filter(pred(t.isImportSpecifier))
-    .filter(s => s.imported.name === fnName)
-    .map(s => s.local.name)
-    .map(ref => path.scope.getBinding(ref))
-    .filter((ref): ref is Binding => ref !== undefined)
-    .flatMap(ref => ref.referencePaths);
 
-  const namespaceMockRefs = statements
-    .filter(pred(t.isImportDeclaration))
-    .filter(s => s.source.value === JOKE_MODULE)
-    .flatMap(s => s.specifiers)
-    .filter(pred(t.isImportNamespaceSpecifier))
-    .map(s => s.local.name)
-    .map(ref => path.scope.getBinding(ref))
-    .filter((ref): ref is Binding => ref !== undefined)
-    .flatMap(ref => ref.referencePaths)
-    .filter(path => {
+  const importSpecifiers = pipe(
+    statements,
+    A.filter(pred(t.isImportDeclaration)),
+    A.filter((s) => s.source.value === JOKE_MODULE),
+    A.chain((s) => s.specifiers)
+  );
+
+  const namedMockRefs = pipe(
+    importSpecifiers,
+    A.filter(pred(t.isImportSpecifier)),
+    A.filter((s) => s.imported.name === fnName),
+    A.map((s) => s.local.name),
+    A.map((ref) => path.scope.getBinding(ref)),
+    A.filter((ref): ref is Binding => ref !== undefined),
+    A.chain((ref) => ref.referencePaths)
+  );
+
+  const namespaceMockRefs = pipe(
+    importSpecifiers,
+    A.filter(pred(t.isImportNamespaceSpecifier)),
+    A.map((s) => s.local.name),
+    A.map((ref) => path.scope.getBinding(ref)),
+    A.filter((ref): ref is Binding => ref !== undefined),
+    A.chain((ref) => ref.referencePaths),
+    A.filter((path) => {
       const M = path.node;
       const memberExpr = path.parent;
       if (!t.isMemberExpression(memberExpr)) return false;
@@ -85,15 +90,20 @@ function getJokeMockCalls(
       )
         return false;
       return true;
-    })
-    .map(path => path.parentPath);
+    }),
+    A.map((path) => path.parentPath)
+  );
 
-  const mockRefPaths = namedMockRefs.concat(namespaceMockRefs).filter(path => {
-    if (path.scope.getProgramParent() !== path.scope) {
-      throw new Error("Can only use `mock` at the top-level scope.");
-    }
-    return true;
-  });
+  const mockRefPaths = pipe(
+    namedMockRefs,
+    A.alt(() => namespaceMockRefs),
+    A.filter((path) => {
+      if (path.scope.getProgramParent() !== path.scope) {
+        throw new Error("Can only use `mock` at the top-level scope.");
+      }
+      return true;
+    })
+  );
 
   return mockRefPaths;
 }
@@ -126,8 +136,8 @@ function convertMockCalls(
 
     const insertJestMockIO = pipe(
       path.get("body"),
-      A.findLast(p => t.isImportDeclaration(p.node)),
-      O.map(lastImportPath => (): void =>
+      A.findLast((p) => t.isImportDeclaration(p.node)),
+      O.map((lastImportPath) => (): void =>
         lastImportPath.insertAfter(
           t.expressionStatement(
             t.callExpression(
@@ -141,7 +151,7 @@ function convertMockCalls(
                       moduleName,
                       moduleImplementation,
                       mockExtendType
-                    )
+                    ),
                   ]
             )
           )
