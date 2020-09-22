@@ -28,6 +28,15 @@ export function mockSome<M, K extends keyof M>(
   return unsafeCoerce(mockSafetyNet());
 }
 
+export function mockAll<M, K extends keyof M>(
+  _: Promise<M>,
+  _impl: () => {
+    [_K in K]: Mocked<M>[_K];
+  }
+): Omit<M, K> & Pick<Mocked<M>, K> {
+  return unsafeCoerce(mockSafetyNet());
+}
+
 function mockSafetyNet(): unknown {
   const safetyObj = {};
   const safetyProxy = new Proxy(safetyObj, {

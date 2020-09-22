@@ -41,7 +41,7 @@ fetchUser.mockReturnValue(Promise.resolve({ id: 1, name: "Jane Doe" }));
 
 ## Full mocking
 
-Mock the whole module.
+Auto-mock the whole module.
 
 ```typescript
 import { mock } from "@userlike/joke";
@@ -53,7 +53,7 @@ fetchUser.mockReturnValue(Promise.resolve({ id: 1, name: "Jane Doe" }));
 
 ### Full mocking with partial implementation
 
-Use the second argument of `mock` to provide some implementation.
+Use the second argument of `mock` to provide a partial implementation. Behind the scenes, it extends auto-mocked module with the given implementation using `Object.assign`.
 
 ```typescript
 import { mock } from "@userlike/joke";
@@ -67,7 +67,7 @@ const { fetchUser } = mock(import("./service"), () => ({
 
 ## Partial mocking
 
-When you need to mock a module partially, but to keep the rest of the module unmocked, you can use `mockSome`.
+When you need to mock a module partially and to keep the rest of the module unmocked, you can use `mockSome`. Behind the scenes, it uses `jest.requireActual`; extends actual implementation with the given implementation using `Object.assign`.
 
 ```typescript
 import { mockSome } from "@userlike/joke";
@@ -87,6 +87,32 @@ test(async () => {
   expect(document.getElementById("#user-id").innerText).toBe(getUserId(user));
 });
 ```
+
+---
+
+## Full replacement
+
+When you want to skip auto-mocking, you can use `mockAll`. It's equivalent to `jest.mock(module, moduleFactory)`.
+
+```typescript
+import { mockAll } from "@userlike/joke";
+import { renderUser } from "./my-component";
+
+const { fetchUser } = mockAll(import("./service"), () => ({
+  fetchUser: jest.fn()
+}));
+
+test(async () => {
+  const user = { id: 1, name: "Jane Doe" };
+  fetchUser.mockReturnValue(Promise.resolve(user));
+
+  await renderUser();
+
+  expect(document.getElementById("#user-id").innerText).toBe(getUserId(user));
+});
+```
+
+---
 
 ## Usage with `ts-jest`
 
@@ -111,7 +137,7 @@ Example Typescript configuration for tests:
 }
 ```
 
-To enable Babel preprocessing in `ts-jest`, as well as to configure the `tsconfig` file you want use for tests, add or update the `globals` section in your jest config. 
+To enable Babel preprocessing in `ts-jest`, as well as to configure the `tsconfig` file you want use for tests, add or update the `globals` section in your jest config.
 
 Example with separate Babel and Typescript configuration files:
 
