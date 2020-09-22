@@ -1,17 +1,4 @@
-/**
- * (Hopefully) A better Mocked type that handles nested objects.
- */
-type Mocked<T> = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [P in keyof T]: T[P] extends (...args: any[]) => any
-    ? jest.MockInstance<ReturnType<T[P]>, jest.ArgsType<T[P]>>
-    : T[P] extends jest.Constructable
-    ? jest.MockedClass<T[P]>
-    : T[P] extends Record<string, unknown>
-    ? Mocked<T[P]>
-    : T[P];
-} &
-  T;
+import { Mocked } from "./types";
 
 /**
  *
