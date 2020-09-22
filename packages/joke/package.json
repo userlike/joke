@@ -24,6 +24,9 @@
     "lint": "eslint src --ext .ts",
     "test": "exit 0"
   },
+  "devDependencies": {
+    "@types/jest": "^26.0.14"
+  },
   "peerDependencies": {
     "@types/jest": ">=15.0.0 <=26"
   },

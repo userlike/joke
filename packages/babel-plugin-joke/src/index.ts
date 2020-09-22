@@ -11,11 +11,13 @@ import {
   JSXNamespacedName,
   SpreadElement,
   ArrowFunctionExpression,
+  FunctionExpression,
 } from "@babel/types";
 
 const JOKE_MODULE = "@userlike/joke";
 const JOKE_MOCK = "mock";
 const JOKE_MOCK_SOME = "mockSome";
+const JOKE_MOCK_ALL = "mockAll";
 const JEST = "jest";
 const JEST_MOCK = "mock";
 const JEST_GEN_MOCK_FROM_MODULE = "genMockFromModule";
@@ -24,7 +26,8 @@ const JEST_REQUIRE_ACTUAL = "requireActual";
 type B = typeof import("@babel/core");
 type T = B["types"];
 
-enum MockExtendType {
+enum MockType {
+  MockAll,
   ExtendMocked,
   ExtendActual,
 }
@@ -35,14 +38,13 @@ export default function UserlikeJoke({ types: t }: B): PluginObj {
     visitor: {
       Program(path): void {
         const mockCalls = getJokeMockCalls(t, path, JOKE_MOCK);
-        mockCalls.forEach(
-          convertMockCalls(t, path, MockExtendType.ExtendMocked)
-        );
+        mockCalls.forEach(convertMockCalls(t, path, MockType.ExtendMocked));
 
         const mockSomeCalls = getJokeMockCalls(t, path, JOKE_MOCK_SOME);
-        mockSomeCalls.forEach(
-          convertMockCalls(t, path, MockExtendType.ExtendActual)
-        );
+        mockSomeCalls.forEach(convertMockCalls(t, path, MockType.ExtendActual));
+
+        const mockAllCalls = getJokeMockCalls(t, path, JOKE_MOCK_ALL);
+        mockAllCalls.forEach(convertMockCalls(t, path, MockType.MockAll));
       },
     },
   };
@@ -111,7 +113,7 @@ function getJokeMockCalls(
 function convertMockCalls(
   t: typeof import("@babel/types"),
   path: NodePath<Program>,
-  mockExtendType: MockExtendType
+  mockType: MockType
 ): (mockRef: NodePath) => void {
   return (mockPath): void => {
     const callPath = mockPath.parentPath;
@@ -150,7 +152,7 @@ function convertMockCalls(
                       t,
                       moduleName,
                       moduleImplementation,
-                      mockExtendType
+                      mockType
                     ),
                   ]
             )
@@ -172,18 +174,23 @@ function mockImplementation(
   t: T,
   moduleName: string,
   impl: Expression | SpreadElement | JSXNamespacedName | ArgumentPlaceholder,
-  mockType: MockExtendType
-): ArrowFunctionExpression {
+  mockType: MockType
+): FunctionExpression | ArrowFunctionExpression {
   invariant(
     t.isFunctionExpression(impl) || t.isArrowFunctionExpression(impl),
     `Unexpected second argument to \`mock\` of type ${impl.type}, expected FunctionExpression of ArrowFunctionExpression.`
   );
+
+  if (mockType === MockType.MockAll) {
+    return impl;
+  }
+
   const iife = t.callExpression(impl, []);
   const requireMock = t.callExpression(
     t.memberExpression(
       t.identifier(JEST),
       t.identifier(
-        mockType === MockExtendType.ExtendMocked
+        mockType === MockType.ExtendMocked
           ? JEST_GEN_MOCK_FROM_MODULE
           : JEST_REQUIRE_ACTUAL
       )

@@ -43,6 +43,7 @@ it("handles mock import as a namespace", async () => {
   import * as M from '@userlike/joke';
   const { foo } = M.mock(import('foobar'));
   `);
+
   expect(result).toMatchInlineSnapshot(`
     "import * as _foobar from \\"foobar\\";
     import * as M from '@userlike/joke';
@@ -59,6 +60,7 @@ it("handles assigning return value to a namespace variable", async () => {
   const F = mock(import('foobar'));
   F.foo.mockReturnValue(5);
   `);
+
   expect(result).toMatchInlineSnapshot(`
     "import * as _foobar from \\"foobar\\";
     import { mock } from '@userlike/joke';
@@ -74,6 +76,7 @@ it("handles member expressions", async () => {
   const bar = mock(import('foobar')).foo.bar;
   bar.mockReturnValue(5);
   `);
+
   expect(result).toMatchInlineSnapshot(`
     "import * as _foobar from \\"foobar\\";
     import { mock } from '@userlike/joke';
@@ -88,6 +91,7 @@ it("handles just a call expression", async () => {
   import { mock } from '@userlike/joke';
   mock(import('foobar'));
   `);
+
   expect(result).toMatchInlineSnapshot(`
     "import * as _foobar from \\"foobar\\";
     import { mock } from '@userlike/joke';
@@ -97,24 +101,24 @@ it("handles just a call expression", async () => {
 });
 
 it("throws error if mock is called inside closures", async () => {
-  const result = assert(`
+  const promise = assert(`
     import { mock } from '@userlike/joke';
     beforeEach(() => {
       const { foo } = mock(import('foo'));
     });
     `);
-  expect(result).rejects.toMatchInlineSnapshot(
+  await expect(promise).rejects.toMatchInlineSnapshot(
     `[Error: /example.ts: Can only use \`mock\` at the top-level scope.]`
   );
 });
 
 it("works with rest params", async () => {
-  const promise = assert(`
+  const result = await assert(`
     import { mock } from '@userlike/joke';
     const { foo, ...bar } = mock(import('foobar'));
     `);
 
-  expect(promise).resolves.toMatchInlineSnapshot(`
+  expect(result).toMatchInlineSnapshot(`
     "import * as _foobar from \\"foobar\\";
     import { mock } from '@userlike/joke';
     jest.mock(\\"foobar\\");
@@ -126,14 +130,14 @@ it("works with rest params", async () => {
 });
 
 it("allows custom module implementation to be passed", async () => {
-  const promise = assert(`
+  const result = await assert(`
     import { mock } from '@userlike/joke';
     const { foo } = mock(import('foobar'), () => ({
       foo: 5
     }));
     `);
 
-  expect(promise).resolves.toMatchInlineSnapshot(`
+  expect(result).toMatchInlineSnapshot(`
     "import * as _foobar from \\"foobar\\";
     import { mock } from '@userlike/joke';
     jest.mock(\\"foobar\\", () => global.Object.assign({}, jest.genMockFromModule(\\"foobar\\"), (() => ({
@@ -151,18 +155,62 @@ it("throws a sensible error on invalid usage", async () => {
     mock('foo');
     `);
 
-  expect(promise).rejects.toMatchInlineSnapshot(`
-    [Error: /example.ts: 
-    \`mock\` must be used like:
+  await expect(promise).rejects.toMatchInlineSnapshot(`
+          [Error: /example.ts: 
+          \`mock\` must be used like:
 
-    mock(import('moduleName'))
+          mock(import('moduleName'))
 
-    Instead saw:
+          Instead saw:
 
-    mock('foo')
+          mock('foo')
 
-    ]
-  `);
+          ]
+        `);
+});
+
+describe("mockSome", () => {
+  it("extends requireActual'ed original impl with provided mock", async () => {
+    const result = await assert(`
+    import { mockSome } from '@userlike/joke';
+    const { bar } = mockSome(import('foo'), () => ({
+      bar: jest.fn()
+    }));
+    `);
+
+    expect(result).toMatchInlineSnapshot(`
+      "import * as _foo from \\"foo\\";
+      import { mockSome } from '@userlike/joke';
+      jest.mock(\\"foo\\", () => global.Object.assign({}, jest.requireActual(\\"foo\\"), (() => ({
+        bar: jest.fn()
+      }))()));
+      const {
+        bar
+      } = _foo;"
+    `);
+  });
+});
+
+describe("mockAll", () => {
+  it("uses plain jest.mock with no extends", async () => {
+    const result = await assert(`
+    import { mockAll } from '@userlike/joke';
+    const { bar } = mockAll(import('foo'), () => ({
+      bar: jest.fn()
+    }));
+    `);
+
+    expect(result).toMatchInlineSnapshot(`
+      "import * as _foo from \\"foo\\";
+      import { mockAll } from '@userlike/joke';
+      jest.mock(\\"foo\\", () => ({
+        bar: jest.fn()
+      }));
+      const {
+        bar
+      } = _foo;"
+    `);
+  });
 });
 
 async function assert(code: string): Promise<string | null | undefined> {
