@@ -67,7 +67,7 @@ const { fetchUser } = mock(import("./service"), () => ({
 
 ## Partial mocking
 
-When you need to mock a module partially and to keep the rest of the module unmocked, you can use `mockSome`. Behind the scenes, it uses `jest.requireActual`; extends actual implementation with the given implementation using `Object.assign`.
+When you need to mock a module partially and want to keep the rest of the module unmocked, you can use `mockSome`. Behind the scenes, it uses `jest.requireActual` by extending its actual implementation with the given implementation using `Object.assign`.
 
 ```typescript
 import { mockSome } from "@userlike/joke";
