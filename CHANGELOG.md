@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-alpha.0](https://github.com/userlike/joke/compare/v1.0.2...v2.0.0-alpha.0) (2020-09-23)
+
+
+### chore
+
+* regen subpkgs with mklib ([a6e3608](https://github.com/userlike/joke/commit/a6e3608ee718f4964329298cb8bcca3ec9845a20))
+
+
+### Features
+
+* add mockAll ([fa46d77](https://github.com/userlike/joke/commit/fa46d774d1a908e6e849f83d7285b6676887340d)), closes [#11](https://github.com/userlike/joke/issues/11)
+* improve mocked types ([8328bdc](https://github.com/userlike/joke/commit/8328bdc8143d71b3c69a299f5e381af1d1b90786)), closes [#13](https://github.com/userlike/joke/issues/13)
+
+
+### BREAKING CHANGES
+
+* New mocked types carry the risk of breaking existing code
+* Removing polyfills can break depending on your node version.
+
+
+
+
+
 ## [1.0.2](https://github.com/anilanar/dev/compare/v1.0.1...v1.0.2) (2020-07-21)
 
 **Note:** Version bump only for package joke
