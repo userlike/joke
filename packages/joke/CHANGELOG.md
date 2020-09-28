@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/anilanar/mklib/compare/v2.0.0-alpha.0...v2.0.0) (2020-09-28)
+
+**Note:** Version bump only for package @userlike/joke
+
+
+
+
+
 # [2.0.0-alpha.0](https://github.com/anilanar/mklib/compare/v1.0.2...v2.0.0-alpha.0) (2020-09-23)
 
 
