@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/anilanar/dev/compare/v2.0.0...v2.1.0) (2021-08-31)
+
+
+### Features
+
+* **joke:** increment allowed jest types version to 27 ([639d842](https://github.com/anilanar/dev/commit/639d842cc8a79420e4f0d85cf5653fd1d7ef16bf))
+
+
+
+
+
 # [2.0.0](https://github.com/anilanar/dev/compare/v2.0.0-alpha.0...v2.0.0) (2020-09-28)
 
 **Note:** Version bump only for package joke-example
