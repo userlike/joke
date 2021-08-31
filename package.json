@@ -8,6 +8,6 @@
     "prepare": "mklib prepare"
   },
   "devDependencies": {
-    "@anilanar/mklib": "^1.0.15"
+    "@anilanar/mklib": "^3.0.5"
   }
 }

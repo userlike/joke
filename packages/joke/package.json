@@ -5,13 +5,13 @@
   "module": "dist/es/index.js",
   "types": "dist/es/index.d.ts",
   "sideEffects": false,
-  "homepage": "",
+  "homepage": "https://github.com/userlike/joke",
   "repository": {
     "type": "git",
-    "url": "github:anilanar/mklib",
+    "url": "github:userlike/joke",
     "directory": "packages/joke"
   },
-  "author": "Anil Anar &lt;mail@anilanar.me&gt;",
+  "author": "Anil Anar mail@anilanar.me",
   "license": "MIT",
   "files": [
     "dist/es",
