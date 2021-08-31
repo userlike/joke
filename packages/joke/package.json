@@ -25,10 +25,10 @@
     "test": "exit 0"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.14"
+    "@types/jest": "^27.0.1"
   },
   "peerDependencies": {
-    "@types/jest": ">=15.0.0 <=26"
+    "@types/jest": ">=15.0.0 <=27"
   },
   "publishConfig": {
     "access": "public"
