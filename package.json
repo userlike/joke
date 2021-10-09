@@ -3,11 +3,13 @@
   "homepage": "https://github.com/userlike/joke",
   "repository": "https://github.com/userlike/joke.git",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "prepare": "mklib prepare"
   },
   "devDependencies": {
-    "@anilanar/mklib": "^3.0.5"
+    "@anilanar/mklib": "^4.0.0"
   }
 }
