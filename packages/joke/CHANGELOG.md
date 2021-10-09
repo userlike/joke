@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.2](https://github.com/userlike/joke/compare/v2.1.1...v2.1.2) (2021-10-09)
+
+
+### Bug Fixes
+
+* fix broken builds and type errors ([b9a2c63](https://github.com/userlike/joke/commit/b9a2c63c90a7468c02d8f8cdb3cfd94665c70270))
+
+
+
+
+
 ## [2.1.1](https://github.com/userlike/joke/compare/v2.1.0...v2.1.1) (2021-10-09)
 
 **Note:** Version bump only for package @userlike/joke
