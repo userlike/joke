@@ -1,7 +1,7 @@
 {
   "name": "joke-example",
   "private": true,
-  "version": "2.1.0",
+  "version": "2.1.1",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
@@ -11,10 +11,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "@userlike/joke": "^2.1.0"
+    "@userlike/joke": "^2.1.1"
   },
   "devDependencies": {
     "@types/jest": "27.0.2",
-    "@userlike/babel-plugin-joke": "^2.1.0"
+    "@userlike/babel-plugin-joke": "^2.1.1"
   }
 }
