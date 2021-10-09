@@ -1,4 +1,4 @@
-import { pipe } from "fp-ts/pipeable";
+import { pipe } from "fp-ts/function";
 import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
 import { addNamespace } from "@babel/helper-module-imports";
@@ -93,14 +93,14 @@ function getJokeMockCalls(
         return false;
       return true;
     }),
-    A.map((path) => path.parentPath)
+    A.filterMap((path) => O.fromNullable(path.parentPath))
   );
 
   const mockRefPaths = pipe(
     namedMockRefs,
     A.alt(() => namespaceMockRefs),
     A.filter((path) => {
-      if (path.scope.getProgramParent() !== path.scope) {
+      if (path?.scope.getProgramParent() !== path.scope) {
         throw new Error("Can only use `mock` at the top-level scope.");
       }
       return true;
@@ -119,6 +119,7 @@ function convertMockCalls(
     const callPath = mockPath.parentPath;
     const call = mockPath.parent;
 
+    invariant(callPath !== null, "Unexpected error: callPath is null.");
     invariantPath(t.isCallExpression(call), callPath);
 
     const asyncImport = call.arguments[0];
@@ -139,7 +140,7 @@ function convertMockCalls(
     const insertJestMockIO = pipe(
       path.get("body"),
       A.findLast((p) => t.isImportDeclaration(p.node)),
-      O.map((lastImportPath) => (): void =>
+      O.map((lastImportPath) => (): void => {
         lastImportPath.insertAfter(
           t.expressionStatement(
             t.callExpression(
@@ -157,8 +158,8 @@ function convertMockCalls(
                   ]
             )
           )
-        )
-      ),
+        );
+      }),
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       O.getOrElse(() => (): void => {})
     );

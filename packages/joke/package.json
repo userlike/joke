@@ -18,7 +18,9 @@
     "dist/cjs"
   ],
   "scripts": {
-    "build": "tsc",
+    "prebuild": "yarn clean",
+    "build": "yarn build:es && yarn build:cjs",
+    "build:es": "tsc",
     "build:cjs": "tsc -b tsconfig.cjs.json",
     "clean": "rm -rf dist",
     "lint": "eslint src --ext .ts",
