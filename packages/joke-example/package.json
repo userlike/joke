@@ -14,7 +14,7 @@
     "@userlike/joke": "^2.1.2"
   },
   "devDependencies": {
-    "@types/jest": "27.0.2",
+    "@types/jest": "29.2.3",
     "@userlike/babel-plugin-joke": "^2.1.2"
   }
 }
