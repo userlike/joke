@@ -1,6 +1,6 @@
 {
   "name": "@userlike/joke",
-  "version": "2.1.2",
+  "version": "2.1.3-alpha.0",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
   "types": "dist/es/index.d.ts",
