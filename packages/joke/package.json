@@ -27,7 +27,7 @@
     "test": "exit 0"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.3"
+    "@types/jest": "^29.5.0"
   },
   "peerDependencies": {
     "@types/jest": ">=15.0.0"

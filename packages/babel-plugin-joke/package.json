@@ -34,7 +34,7 @@
     "fp-ts": "^2.11.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.2",
-    "@babel/traverse": "^7.20.1"
+    "@babel/core": "^7.21.3",
+    "@babel/traverse": "^7.21.3"
   }
 }
