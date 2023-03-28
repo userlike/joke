@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.3](https://github.com/userlike/joke/compare/v2.1.2...v2.1.3) (2023-03-28)
+
+
+### Bug Fixes
+
+* upgrade deps to fix audit errors ([d725f78](https://github.com/userlike/joke/commit/d725f788ad9f165b950da2ebb7a275c67903fa34))
+
+
+
+
+
 ## [2.1.2](https://github.com/userlike/joke/compare/v2.1.1...v2.1.2) (2021-10-09)
 
 **Note:** Version bump only for package joke-example
