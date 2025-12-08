@@ -1,15 +1,10 @@
 {
   "name": "joke",
+  "private": true,
   "homepage": "https://github.com/userlike/joke",
   "repository": "https://github.com/userlike/joke.git",
-  "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
-  "scripts": {
-    "prepare": "mklib prepare"
-  },
+  "packageManager": "pnpm@10.24.0",
   "devDependencies": {
-    "@anilanar/mklib": "^8.0.0"
+    "@changesets/cli": "^2.29.8"
   }
 }

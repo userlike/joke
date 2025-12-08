@@ -1,15 +1,5 @@
 {
-  "extends": "../../config/tsconfig.es.json",
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*"],
   "exclude": ["src/**/*.test.ts"],
-  "compilerOptions": {
-    "outDir": "dist/es",
-    "rootDir": "src",
-    "baseUrl": "./",
-    "paths": {
-      "@babel/types": ["types/@babel/types"],
-      "@babel/helper-module-imports": ["types/@babel/helper-module-imports"]
-    },
-    "types": ["jest"]
-  }
+  "extends": "../dev/tsconfig.base.json"
 }

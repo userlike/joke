@@ -55,7 +55,7 @@ export default function UserlikeJoke({ types: t }: B): PluginObj {
 function getJokeMockCalls(
   t: T,
   path: NodePath<Program>,
-  fnName: string
+  fnName: string,
 ): NodePath[] {
   const statements = path.node.body;
 
@@ -63,17 +63,17 @@ function getJokeMockCalls(
     statements,
     A.filter(pred(t.isImportDeclaration)),
     A.filter((s) => s.source.value === JOKE_MODULE),
-    A.chain((s) => s.specifiers)
+    A.chain((s) => s.specifiers),
   );
 
   const namedMockRefs = pipe(
     importSpecifiers,
-    A.filter(pred(t.isImportSpecifier)),
-    A.filter((s) => s.imported.name === fnName),
+    A.filter(t.isImportSpecifier),
+    A.filter((s) => t.isIdentifier(s.imported) && s.imported.name === fnName),
     A.map((s) => s.local.name),
     A.map((ref) => path.scope.getBinding(ref)),
     A.filter((ref): ref is Binding => ref !== undefined),
-    A.chain((ref) => ref.referencePaths)
+    A.chain((ref) => ref.referencePaths),
   );
 
   const namespaceMockRefs = pipe(
@@ -95,7 +95,7 @@ function getJokeMockCalls(
         return false;
       return true;
     }),
-    A.filterMap((path) => O.fromNullable(path.parentPath))
+    A.filterMap((path) => O.fromNullable(path.parentPath)),
   );
 
   const mockRefPaths = pipe(
@@ -106,7 +106,7 @@ function getJokeMockCalls(
         throw new Error("Can only use `mock` at the top-level scope.");
       }
       return true;
-    })
+    }),
   );
 
   return mockRefPaths;
@@ -115,7 +115,7 @@ function getJokeMockCalls(
 function convertMockCalls(
   t: typeof import("@babel/types"),
   path: NodePath<Program>,
-  mockType: MockType
+  mockType: MockType,
 ): (mockRef: NodePath) => void {
   return (mockPath): void => {
     const callPath = mockPath.parentPath;
@@ -157,15 +157,15 @@ function convertMockCalls(
                       t,
                       moduleName,
                       moduleImplementation,
-                      mockType
+                      mockType,
                     ),
-                  ]
-            )
-          )
+                  ],
+            ),
+          ),
         );
       }),
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      O.getOrElse(() => (): void => {})
+      O.getOrElse(() => (): void => {}),
     );
 
     insertJestMockIO();
@@ -180,11 +180,11 @@ function mockImplementation(
   t: T,
   moduleName: string,
   impl: Expression | SpreadElement | JSXNamespacedName | ArgumentPlaceholder,
-  mockType: MockType
+  mockType: MockType,
 ): FunctionExpression | ArrowFunctionExpression {
   invariant(
     t.isFunctionExpression(impl) || t.isArrowFunctionExpression(impl),
-    `Unexpected second argument to \`mock\` of type ${impl.type}, expected FunctionExpression of ArrowFunctionExpression.`
+    `Unexpected second argument to \`mock\` of type ${impl.type}, expected FunctionExpression of ArrowFunctionExpression.`,
   );
 
   if (mockType === MockType.MockAll) {
@@ -199,17 +199,17 @@ function mockImplementation(
       t.identifier(
         mockType === MockType.ExtendMocked
           ? JEST_GEN_MOCK_FROM_MODULE
-          : JEST_REQUIRE_ACTUAL
-      )
+          : JEST_REQUIRE_ACTUAL,
+      ),
     ),
-    [t.stringLiteral(moduleName)]
+    [t.stringLiteral(moduleName)],
   );
   const objectAssign = t.callExpression(
     t.memberExpression(
       t.memberExpression(t.identifier("global"), t.identifier("Object")),
-      t.identifier("assign")
+      t.identifier("assign"),
     ),
-    [t.objectExpression([]), requireMock, iife]
+    [t.objectExpression([]), requireMock, iife],
   );
   const wrappedImpl = t.arrowFunctionExpression([], objectAssign);
   return wrappedImpl;
@@ -236,13 +236,13 @@ function throwErr(path: NodePath): never {
       "mock(import('moduleName'))\n\n" +
       "Instead saw:\n\n" +
       path.getSource() +
-      "\n\n"
+      "\n\n",
   );
 }
 
 function addJestImport(
   t: typeof import("@babel/types"),
-  path: NodePath<Program>
+  path: NodePath<Program>,
 ): Identifier {
   let existingImport: Identifier | undefined;
 
@@ -251,8 +251,9 @@ function addJestImport(
       if (importPath.node.source.value === "@jest/globals") {
         existingImport = importPath.node.specifiers.find(
           (specifier): specifier is ImportSpecifier =>
-            specifier.type === "ImportSpecifier" &&
-            specifier.imported.name === JEST
+            t.isImportSpecifier(specifier) &&
+            t.isIdentifier(specifier.imported) &&
+            specifier.imported.name === JEST,
         )?.local;
       }
     },
@@ -260,7 +261,7 @@ function addJestImport(
   if (existingImport === undefined) {
     const jestImport = t.importDeclaration(
       [t.importSpecifier(t.identifier(JEST), t.identifier(JEST))],
-      t.stringLiteral("@jest/globals")
+      t.stringLiteral("@jest/globals"),
     );
     path.unshiftContainer("body", jestImport);
     return t.identifier(JEST);

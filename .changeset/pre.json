@@ -1,0 +1,9 @@
+{
+  "mode": "pre",
+  "tag": "globals",
+  "initialVersions": {
+    "@userlike/babel-plugin-joke": "2.1.2",
+    "@userlike/joke": "2.1.2"
+  },
+  "changesets": []
+}

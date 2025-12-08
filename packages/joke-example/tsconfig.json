@@ -1,10 +1,9 @@
 {
-  "extends": "../../config/tsconfig.es.json",
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.test.ts"],
+  "include": ["src/**/*"],
+  "extends": "../dev/tsconfig.base.json",
   "compilerOptions": {
-    "module": "ES2020",
-    "outDir": "dist/es",
-    "rootDir": "src"
+    "noEmit": true,
+    "module": "esnext",
+    "moduleResolution": "node"
   }
 }

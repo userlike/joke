@@ -1,4 +1,4 @@
-import { Mocked } from "./types";
+import { Mocked } from "./types.js";
 
 /**
  *

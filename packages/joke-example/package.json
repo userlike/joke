@@ -4,17 +4,16 @@
   "version": "3.0.0-internal.3",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "build:cjs": "tsc -b tsconfig.cjs.json",
-    "clean": "rm -rf dist",
-    "lint": "eslint src --ext .ts",
+    "build": "../dev/bin.mjs build",
+    "lint": "../dev/bin.mjs lint",
     "test": "jest"
   },
   "dependencies": {
-    "@userlike/joke": "^3.0.0-internal.0"
+    "@userlike/joke": "workspace:*"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "@userlike/babel-plugin-joke": "^3.0.0-internal.3"
+    "@jest/globals": "^30.2.0",
+    "@userlike/babel-plugin-joke": "workspace:*",
+    "jest": "catalog:"
   }
 }

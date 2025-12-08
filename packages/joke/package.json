@@ -1,10 +1,6 @@
 {
   "name": "@userlike/joke",
   "version": "3.0.0-internal.0",
-  "main": "dist/cjs/index.js",
-  "module": "dist/es/index.js",
-  "types": "dist/es/index.d.ts",
-  "sideEffects": false,
   "homepage": "https://github.com/userlike/joke",
   "repository": {
     "type": "git",
@@ -13,25 +9,31 @@
   },
   "author": "Anil Anar",
   "license": "MIT",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/cjs/index.d.ts",
+  "module": "./dist/esm/index.js",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      },
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      }
+    }
+  },
+  "sideEffects": false,
   "files": [
-    "dist/es",
-    "dist/cjs"
+    "dist"
   ],
   "scripts": {
-    "prebuild": "yarn clean",
-    "build": "yarn build:es && yarn build:cjs",
-    "build:es": "tsc",
-    "build:cjs": "tsc -b tsconfig.cjs.json",
-    "clean": "rm -rf dist",
-    "lint": "eslint src --ext .ts",
-    "test": "exit 0"
-  },
-  "devDependencies": {
-    "@types/jest": "^29.5.0"
+    "build": "../dev/bin.mjs build",
+    "lint": "../dev/bin.mjs lint"
   },
   "peerDependencies": {
-    "@jest/globals": ">=29.0.0",
-    "@types/jest": ">=15.0.0"
+    "@jest/globals": ">=29.0.0"
   },
   "publishConfig": {
     "access": "public"
