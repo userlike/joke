@@ -3,7 +3,11 @@
   "tag": "globals",
   "initialVersions": {
     "@userlike/babel-plugin-joke": "2.1.2",
-    "@userlike/joke": "2.1.2"
+    "@userlike/joke": "2.1.2",
+    "@userlike/joke-dev": "0.0.1",
+    "joke-example": "3.0.0-internal.3"
   },
-  "changesets": []
+  "changesets": [
+    "major-wings-add"
+  ]
 }
